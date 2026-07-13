@@ -16,25 +16,57 @@ use Illuminate\View\View;
 class TransactionController extends Controller
 {
     /**
-     * Daftar transaksi hari ini, dipisah antara item layanan dan item produk.
+     * Daftar transaksi hari ini, dipisah antara item layanan dan item produk,
+     * dengan filter opsional: barber, metode pembayaran, dan layanan.
      */
-    public function index(): View
+    public function index(Request $request): View
     {
         $storeDay = StoreDay::today();
 
-        $layananItems = TransactionItem::where('item_type', 'layanan')
-            ->whereHas('transaction', fn ($q) => $q->where('store_day_id', $storeDay->id))
-            ->with('transaction.barber')
-            ->latest()
-            ->get();
+        $barberId = $request->query('barber_id');
+        $paymentMethod = $request->query('payment_method');
+        $serviceId = $request->query('service_id');
+
+        $layananQuery = TransactionItem::where('item_type', 'layanan')
+            ->whereHas('transaction', function ($q) use ($storeDay, $barberId, $paymentMethod) {
+                $q->where('store_day_id', $storeDay->id);
+                if ($barberId) {
+                    $q->where('barber_id', $barberId);
+                }
+                if ($paymentMethod) {
+                    $q->where('payment_method', $paymentMethod);
+                }
+            })
+            ->with('transaction.barber');
+
+        if ($serviceId) {
+            $layananQuery->where('item_id', $serviceId);
+        }
+
+        $layananItems = $layananQuery->oldest()->get()->values();
 
         $produkItems = TransactionItem::where('item_type', 'produk')
-            ->whereHas('transaction', fn ($q) => $q->where('store_day_id', $storeDay->id))
+            ->whereHas('transaction', function ($q) use ($storeDay, $barberId, $paymentMethod) {
+                $q->where('store_day_id', $storeDay->id);
+                if ($barberId) {
+                    $q->where('barber_id', $barberId);
+                }
+                if ($paymentMethod) {
+                    $q->where('payment_method', $paymentMethod);
+                }
+            })
             ->with('transaction')
-            ->latest()
-            ->get();
+            ->oldest()
+            ->get()
+            ->values();
 
-        return view('transactions.index', compact('storeDay', 'layananItems', 'produkItems'));
+        $barbers = \App\Models\User::role('barber')->get();
+        $services = \App\Models\Service::orderBy('nama')->get();
+
+        return view('transactions.index', compact(
+            'storeDay', 'layananItems', 'produkItems', 'barbers', 'services',
+            'barberId', 'paymentMethod', 'serviceId'
+        ));
     }
 
     /**

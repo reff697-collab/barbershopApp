@@ -77,6 +77,7 @@
                 <table class="w-full text-sm text-left">
                     <thead class="bg-gray-50 text-gray-600">
                         <tr>
+                            <th class="px-3 py-2 w-10">#</th>
                             <th class="px-3 py-2">Nama</th>
                             <th class="px-3 py-2 w-20">Qty</th>
                             <th class="px-3 py-2 w-32">Subtotal</th>
@@ -84,16 +85,17 @@
                         </tr>
                     </thead>
                     <tbody class="divide-y">
-                        <template x-for="(item, index) in items" :key="index">
+                        <template x-for="item in reversedItems()" :key="item.originalIndex">
                             <tr>
+                                <td class="px-3 py-2 text-gray-400" x-text="'#' + (item.originalIndex + 1)"></td>
                                 <td class="px-3 py-2" x-text="item.nama"></td>
                                 <td class="px-3 py-2">
-                                    <input type="number" min="1" x-model.number="item.qty" @input="recalc()"
+                                    <input type="number" min="1" x-model.number="items[item.originalIndex].qty" @input="recalc()"
                                            class="w-16 border rounded px-2 py-1 text-sm">
                                 </td>
                                 <td class="px-3 py-2" x-text="'Rp ' + (item.harga * item.qty).toLocaleString('id-ID')"></td>
                                 <td class="px-3 py-2 text-right">
-                                    <button type="button" @click="removeItem(index)" class="text-red-600 text-xs">Hapus</button>
+                                    <button type="button" @click="removeItem(item.originalIndex)" class="text-red-600 text-xs">Hapus</button>
                                 </td>
                             </tr>
                         </template>
@@ -159,6 +161,12 @@
 
                     this.pickerId = '';
                     this.recalc();
+                },
+
+                reversedItems() {
+                    return this.items
+                        .map((item, index) => ({ ...item, originalIndex: index }))
+                        .reverse();
                 },
 
                 removeItem(index) {
