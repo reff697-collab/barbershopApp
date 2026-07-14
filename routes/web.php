@@ -4,6 +4,7 @@ use App\Http\Controllers\ClosingBulananController;
 use App\Http\Controllers\ClosingHarianController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ExpenseController;
+use App\Http\Controllers\KasKeluarController;
 use App\Http\Controllers\LoanController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
@@ -45,6 +46,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/transaksi', [TransactionController::class, 'index'])->name('transactions.index');
         Route::get('/transaksi/baru', [TransactionController::class, 'create'])->name('transactions.create');
         Route::post('/transaksi', [TransactionController::class, 'store'])->name('transactions.store');
+
+        // Route Kas Keluar
+        Route::get('/kas-keluar', [KasKeluarController::class, 'index'])->name('kas-keluar.index');
+        Route::post('/kas-keluar', [KasKeluarController::class, 'store'])->name('kas-keluar.store');
     });
 
     // Route khusus role Admin IT

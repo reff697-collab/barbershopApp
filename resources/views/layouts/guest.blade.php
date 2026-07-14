@@ -20,7 +20,7 @@
                 <div class="w-7 h-7 rounded-xl bg-gradient-to-br from-coral-400 to-coral-600 flex items-center justify-center px-3 py-3">
                     <span class="text-white text-lg font-semibold">B</span>
                 </div>
-                <span class="text-lg font-semibold text-gray-800">Barbershop</span>
+                <span class="text-lg font-semibold text-gray-800">Rafel</span>
             </div>
 
             <div class="w-full sm:max-w-md px-6 py-10 bg-white rounded-2xl border border-gray-100">

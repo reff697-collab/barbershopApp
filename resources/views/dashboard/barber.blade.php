@@ -116,6 +116,74 @@
 
         </div>
 
+        {{-- Breakdown layanan --}}
+        @if ($breakdown->isNotEmpty())
+
+            {{-- Judul breakdown --}}
+            <div class="flex items-center justify-between gap-3 mb-3">
+                <div>
+                    <h3 class="text-sm sm:text-base font-semibold text-gray-800">
+                        Layanan Hari Ini
+                    </h3>
+
+                    <p class="text-xs sm:text-sm text-gray-400 mt-0.5">
+                        Ringkasan layanan yang kamu tangani.
+                    </p>
+                </div>
+            </div>
+
+            {{-- Tabel ringkas kode layanan --}}
+            <div class="bg-white rounded-xl sm:rounded-2xl border border-gray-100 overflow-hidden shadow-sm mb-6">
+                <div class="overflow-x-auto">
+                    <table class="w-full min-w-max text-xs sm:text-sm text-center">
+                        <thead class="bg-gray-50 text-gray-500">
+                            <tr>
+                                @foreach ($breakdown as $item)
+                                    <th class="px-4 py-3 font-medium">
+                                        {{ $item['kode'] }}
+                                    </th>
+                                @endforeach
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            <tr>
+                                @foreach ($breakdown as $item)
+                                    <td class="px-4 py-3 font-semibold text-gray-800 border-t border-gray-100">
+                                        {{ number_format($item['jumlah'], 0, ',', '.') }}
+                                    </td>
+                                @endforeach
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        @else
+            {{-- Belum ada layanan --}}
+            <div class="bg-white rounded-xl sm:rounded-2xl border border-gray-100 p-6 sm:p-8 text-center mb-6 shadow-sm">
+                <div class="flex items-center justify-center w-12 h-12 rounded-xl bg-gray-100 text-gray-400 mx-auto mb-3">
+                    <svg class="w-6 h-6"
+                         fill="none"
+                         stroke="currentColor"
+                         viewBox="0 0 24 24">
+                        <path stroke-linecap="round"
+                              stroke-linejoin="round"
+                              stroke-width="1.8"
+                              d="M9 12h6m-3-3v6m9-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                </div>
+
+                <p class="text-sm font-medium text-gray-600">
+                    Belum ada layanan hari ini
+                </p>
+
+                <p class="text-xs sm:text-sm text-gray-400 mt-1">
+                    Layanan yang kamu tangani akan muncul di bagian ini.
+                </p>
+            </div>
+        @endif
+
         {{-- Informasi pinjaman --}}
         @if ($activeLoan)
             <div class="bg-orange-50 border border-orange-100 rounded-xl sm:rounded-2xl p-4 sm:p-5 mb-6 shadow-sm">

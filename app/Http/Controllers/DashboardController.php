@@ -2,17 +2,21 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\BarberDailyStatus;
 use App\Models\ClosingHarian;
+use App\Models\Loan;
+use App\Models\Product;
+use App\Models\StoreDay;
 use App\Models\Transaction;
+use App\Models\TransactionItem;
+use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class DashboardController extends Controller
 {
     /**
-     * Redirect user ke dashboard sesuai role-nya.
-     *
-     * Ini dipanggil sekali setelah login berhasil (lihat routes/web.php).
-     * Kalau nanti mau nambah role baru, tinggal tambah case di sini.
+     * Mengarahkan user ke dashboard sesuai role.
      */
     public function index(Request $request)
     {
@@ -29,27 +33,54 @@ class DashboardController extends Controller
 
     /**
      * Dashboard Owner dengan filter rentang waktu.
-     * Default: hari ini. Bisa juga minggu ini, bulan ini, atau custom.
      */
     private function ownerDashboard(Request $request)
     {
         $range = $request->query('range', 'hari_ini');
 
         [$from, $to, $label] = match ($range) {
-            'minggu_ini' => [now()->startOfWeek(), now()->endOfWeek(), 'Minggu Ini'],
-            'bulan_ini' => [now()->startOfMonth(), now()->endOfMonth(), 'Bulan Ini'],
+            'minggu_ini' => [
+                now()->startOfWeek(),
+                now()->endOfWeek(),
+                'Minggu Ini',
+            ],
+
+            'bulan_ini' => [
+                now()->startOfMonth(),
+                now()->endOfMonth(),
+                'Bulan Ini',
+            ],
+
             'custom' => [
-                $request->query('from') ? \Carbon\Carbon::parse($request->query('from')) : now()->startOfMonth(),
-                $request->query('to') ? \Carbon\Carbon::parse($request->query('to')) : now(),
+                $request->query('from')
+                    ? Carbon::parse($request->query('from'))->startOfDay()
+                    : now()->startOfMonth(),
+
+                $request->query('to')
+                    ? Carbon::parse($request->query('to'))->endOfDay()
+                    : now()->endOfDay(),
+
                 'Rentang Kustom',
             ],
-            default => [now()->startOfDay(), now()->endOfDay(), 'Hari Ini'],
+
+            default => [
+                now()->startOfDay(),
+                now()->endOfDay(),
+                'Hari Ini',
+            ],
         };
 
-        // Data dari closing harian yang sudah difinalisasi dalam rentang ini
-        $closingHarians = ClosingHarian::whereHas('storeDay', function ($query) use ($from, $to) {
-            $query->whereBetween('tanggal', [$from->toDateString(), $to->toDateString()]);
-        })->with('storeDay')->get();
+        $closingHarians = ClosingHarian::whereHas(
+            'storeDay',
+            function ($query) use ($from, $to) {
+                $query->whereBetween('tanggal', [
+                    $from->toDateString(),
+                    $to->toDateString(),
+                ]);
+            }
+        )
+            ->with('storeDay')
+            ->get();
 
         $stats = [
             'total_omzet' => $closingHarians->sum('total_omzet'),
@@ -58,31 +89,36 @@ class DashboardController extends Controller
             'laba_bersih' => $closingHarians->sum('laba_bersih'),
         ];
 
-        // Kalau filter "hari ini" dan belum ada closing harian (belum difinalisasi),
-        // tampilkan data live dari transaksi yang sedang berjalan.
         $belumFinal = false;
+
         if ($range === 'hari_ini' && $closingHarians->isEmpty()) {
-            $todayTransactions = Transaction::whereHas('storeDay', function ($query) {
-                $query->whereDate('tanggal', now()->toDateString());
-            })->get();
+            $todayTransactions = Transaction::whereHas(
+                'storeDay',
+                function ($query) {
+                    $query->whereDate('tanggal', now()->toDateString());
+                }
+            )->get();
 
             if ($todayTransactions->isNotEmpty()) {
                 $belumFinal = true;
+
+                $totalOmzet = $todayTransactions->sum('total');
+                $totalKomisi = $todayTransactions->sum('komisi_barber');
+
                 $stats = [
-                    'total_omzet' => $todayTransactions->sum('total'),
-                    'total_komisi' => $todayTransactions->sum('komisi_barber'),
+                    'total_omzet' => $totalOmzet,
+                    'total_komisi' => $totalKomisi,
                     'total_pengeluaran' => 0,
-                    'laba_bersih' => $todayTransactions->sum('total') - $todayTransactions->sum('komisi_barber'),
+                    'laba_bersih' => $totalOmzet - $totalKomisi,
                 ];
             }
         }
 
-        // Data tren harian untuk chart, urut tanggal
         $chartData = $closingHarians
-            ->sortBy(fn ($c) => $c->storeDay->tanggal)
-            ->map(fn ($c) => [
-                'tanggal' => $c->storeDay->tanggal->format('d/m'),
-                'omzet' => (float) $c->total_omzet,
+            ->sortBy(fn ($closing) => $closing->storeDay->tanggal)
+            ->map(fn ($closing) => [
+                'tanggal' => $closing->storeDay->tanggal->format('d/m'),
+                'omzet' => (float) $closing->total_omzet,
             ])
             ->values();
 
@@ -96,43 +132,89 @@ class DashboardController extends Controller
     }
 
     /**
-     * Dashboard Kasir: ringkasan transaksi hari ini + status toko.
+     * Dashboard Kasir:
+     * ringkasan transaksi, status toko, dan layanan setiap barber.
      */
     private function kasirDashboard()
     {
-        $storeDay = \App\Models\StoreDay::today();
+        $storeDay = StoreDay::today();
 
-        $transactions = Transaction::where('store_day_id', $storeDay->id)->get();
+        $transactions = Transaction::where(
+            'store_day_id',
+            $storeDay->id
+        )->get();
+
+        $barbers = User::role('barber')
+            ->get()
+            ->map(function ($barber) use ($storeDay) {
+                $breakdown = $this->layananBreakdown(
+                    $storeDay->id,
+                    $barber->id
+                );
+
+                $status = BarberDailyStatus::where(
+                    'store_day_id',
+                    $storeDay->id
+                )
+                    ->where('barber_id', $barber->id)
+                    ->first();
+
+                return [
+                    'nama' => $barber->name,
+
+                    'status' => match ($status?->status) {
+                        'aktif' => 'Aktif',
+                        'selesai' => 'Selesai',
+                        default => 'Belum Aktif',
+                    },
+
+                    'breakdown' => $breakdown,
+                ];
+            });
 
         return view('dashboard.kasir', [
             'storeDay' => $storeDay,
             'jumlahTransaksi' => $transactions->count(),
             'totalOmzetHariIni' => $transactions->sum('total'),
+            'barbers' => $barbers,
         ]);
     }
 
     /**
-     * Dashboard Barber: status kerja hari ini, komisi live, dan sisa pinjaman.
+     * Dashboard Barber:
+     * status kerja, layanan, komisi, pelanggan, dan pinjaman.
      */
     private function barberDashboard(Request $request)
     {
-        $storeDay = \App\Models\StoreDay::today();
+        $storeDay = StoreDay::today();
         $barberId = $request->user()->id;
 
-        $myStatus = \App\Models\BarberDailyStatus::where('store_day_id', $storeDay->id)
+        $myStatus = BarberDailyStatus::where(
+            'store_day_id',
+            $storeDay->id
+        )
             ->where('barber_id', $barberId)
             ->first();
 
-        $myTransactions = Transaction::where('store_day_id', $storeDay->id)
+        $myTransactions = Transaction::where(
+            'store_day_id',
+            $storeDay->id
+        )
             ->where('barber_id', $barberId)
             ->get();
 
-        $activeLoan = \App\Models\Loan::where('barber_id', $barberId)
+        $breakdown = $this->layananBreakdown(
+            $storeDay->id,
+            $barberId
+        );
+
+        $activeLoan = Loan::where('barber_id', $barberId)
             ->where('status', 'aktif')
             ->first();
 
         return view('dashboard.barber', [
             'myStatus' => $myStatus,
+            'breakdown' => $breakdown,
             'jumlahPelanggan' => $myTransactions->count(),
             'komisiHariIni' => $myTransactions->sum('komisi_barber'),
             'activeLoan' => $activeLoan,
@@ -140,17 +222,48 @@ class DashboardController extends Controller
     }
 
     /**
-     * Dashboard Admin IT: ringkasan sistem (user, produk, stok menipis).
+     * Breakdown jumlah layanan satu barber dalam satu hari.
+     */
+    private function layananBreakdown(int $storeDayId, int $barberId)
+    {
+        return TransactionItem::query()
+            ->where('item_type', 'layanan')
+            ->whereHas(
+                'transaction',
+                function ($query) use ($storeDayId, $barberId) {
+                    $query->where('store_day_id', $storeDayId)
+                        ->where('barber_id', $barberId);
+                }
+            )
+            ->get()
+            ->groupBy('nama')
+            ->map(function ($items, $nama) {
+                return [
+                    'kode' => strtoupper(substr($nama, 0, 1)),
+                    'jumlah' => $items->sum('qty'),
+                ];
+            })
+            ->values();
+    }
+
+    /**
+     * Dashboard Admin IT.
      */
     private function adminItDashboard()
     {
-        $totalUser = \App\Models\User::count();
-        $totalProduk = \App\Models\Product::where('is_active', true)->count();
-        $produkMenipis = \App\Models\Product::where('is_active', true)
+        $totalUser = User::count();
+
+        $totalProduk = Product::where('is_active', true)
+            ->count();
+
+        $produkMenipis = Product::where('is_active', true)
             ->whereColumn('stok', '<=', 'min_stok')
             ->count();
 
-        return view('dashboard.admin-it', compact('totalUser', 'totalProduk', 'produkMenipis'));
+        return view('dashboard.admin-it', compact(
+            'totalUser',
+            'totalProduk',
+            'produkMenipis'
+        ));
     }
-
 }

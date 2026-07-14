@@ -25,26 +25,36 @@ class RoleAndUserSeeder extends Seeder
             Role::firstOrCreate(['name' => $roleName]);
         }
 
-        // 2. Bikin akun demo per role
+       // 2. Bikin akun sesuai staf asli
         $demoUsers = [
             [
-                'name' => 'Owner Demo',
-                'email' => 'owner@barbershop.test',
+                'name' => 'Owner',
+                'email' => 'owner@rafelpangkasrambut.com',
+                'password' => 'password',
                 'role' => 'owner',
             ],
             [
-                'name' => 'Kasir Demo',
-                'email' => 'kasir@barbershop.test',
+                'name' => 'Kasir',
+                'email' => 'kasir@rafelpangkasrambut.com',
+                'password' => 'password',
                 'role' => 'kasir',
             ],
             [
-                'name' => 'Barber Demo',
-                'email' => 'barber@barbershop.test',
+                'name' => 'Ary',
+                'email' => 'ary@rafelpangkasrambut.com',
+                'password' => 'barberbyary',
                 'role' => 'barber',
             ],
             [
-                'name' => 'Admin IT Demo',
-                'email' => 'admin@barbershop.test',
+                'name' => 'Jodi',
+                'email' => 'jodi@rafelpangkasrambut.com',
+                'password' => 'barberbyjodi',
+                'role' => 'barber',
+            ],
+            [
+                'name' => 'Admin IT',
+                'email' => 'admin@rafelpangkasrambut.com',
+                'password' => 'password',
                 'role' => 'admin_it',
             ],
         ];
@@ -54,7 +64,7 @@ class RoleAndUserSeeder extends Seeder
                 ['email' => $data['email']],
                 [
                     'name' => $data['name'],
-                    'password' => Hash::make('password'), // ganti nanti untuk production
+                    'password' => Hash::make($data['password']),
                     'email_verified_at' => now(),
                 ]
             );

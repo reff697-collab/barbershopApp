@@ -199,15 +199,17 @@ class StoreDayController extends Controller
             $totalOmzet = $transactions->sum('total');
             $totalKomisi = $transactions->sum('komisi_barber');
             $totalPengeluaran = \App\Models\Expense::whereDate('tanggal', $storeDay->tanggal)->sum('nominal');
+            $totalKasKeluar = \App\Models\KasKeluar::where('store_day_id', $storeDay->id)->sum('nominal');
 
-            $closingHarian = ClosingHarian::create([
+            $closingHarian = \App\Models\ClosingHarian::create([
                 'store_day_id' => $storeDay->id,
                 'total_omzet' => $totalOmzet,
                 'total_omzet_layanan' => $totalOmzetLayanan,
                 'total_omzet_produk' => $totalOmzetProduk,
                 'total_komisi_barber' => $totalKomisi,
                 'total_pengeluaran' => $totalPengeluaran,
-                'laba_bersih' => $totalOmzet - $totalKomisi - $totalPengeluaran,
+                'total_kas_keluar' => $totalKasKeluar,
+                'laba_bersih' => $totalOmzet - $totalKomisi - $totalPengeluaran - $totalKasKeluar,
                 'closed_by' => $request->user()->id,
                 'closed_at' => now(),
             ]);

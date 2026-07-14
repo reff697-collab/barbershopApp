@@ -27,6 +27,10 @@
                 <span class="text-gray-500">Pengeluaran Operasional</span>
                 <span>Rp {{ number_format($closing->total_pengeluaran, 0, ',', '.') }}</span>
             </div>
+            <div class="flex justify-between">
+                <span class="text-gray-500">Kas Keluar Harian</span>
+                <span>Rp {{ number_format($closing->total_kas_keluar, 0, ',', '.') }}</span>
+            </div>
             <div class="flex justify-between border-t pt-2">
                 <span class="font-medium">Laba Bersih</span>
                 <span class="font-semibold">Rp {{ number_format($closing->laba_bersih, 0, ',', '.') }}</span>

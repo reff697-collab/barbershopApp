@@ -42,9 +42,9 @@ class StoreDay extends Model
         return $this->hasMany(BarberDailyStatus::class);
     }
 
-    public function transactions()
+    public function kasKeluar()
     {
-        return $this->hasMany(Transaction::class);
+        return $this->hasMany(KasKeluar::class);
     }
 
     /**

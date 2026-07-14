@@ -20,9 +20,9 @@
         <div class="h-16 flex items-center px-6 border-b border-gray-100 shrink-0">
             <a href="{{ route('dashboard') }}" class="flex items-center gap-2">
                 <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-coral-400 to-coral-600 flex items-center justify-center">
-                    <span class="text-white text-sm font-semibold">B</span>
+                    <span class="text-white text-sm font-semibold">R</span>
                 </div>
-                <span class="font-semibold text-gray-800">Barbershop</span>
+                <span class="font-semibold text-gray-800">Rafel</span>
             </a>
         </div>
 
@@ -40,6 +40,9 @@
                 </x-sidebar-link>
                 <x-sidebar-link :href="route('transactions.index')" :active="request()->routeIs('transactions.*')">
                     Transaksi
+                </x-sidebar-link>
+                <x-sidebar-link :href="route('kas-keluar.index')" :active="request()->routeIs('kas-keluar.*')">
+                    Kas Keluar
                 </x-sidebar-link>
             @endrole
 
@@ -116,6 +119,6 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
             </svg>
         </button>
-        <span class="ml-3 font-semibold text-gray-800">Barbershop</span>
+        <span class="ml-3 font-semibold text-gray-800">Rafel</span>
     </div>
 </div>
