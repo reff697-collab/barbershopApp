@@ -64,33 +64,32 @@
                 </div>
             </div>
 
-            {{-- Transaksi Hari Ini --}}
-            <div class="bg-white rounded-xl sm:rounded-2xl border border-gray-100 p-4 sm:p-5 shadow-sm">
-                <div class="flex items-start justify-between gap-2">
-                    <div class="min-w-0">
-                        <p class="text-[11px] sm:text-xs text-gray-400 mb-1">
-                            Transaksi Hari Ini
-                        </p>
+            {{-- Pelanggan Hari Ini --}}
+<div class="bg-white rounded-xl sm:rounded-2xl border border-gray-100 p-4 sm:p-5 shadow-sm">
+    <div class="flex items-start justify-between gap-2">
+        <div class="min-w-0">
+            <p class="text-[11px] sm:text-xs text-gray-400 mb-1">
+                Pelanggan Hari Ini
+            </p>
 
-                        <p class="text-base sm:text-lg font-semibold text-gray-800 leading-tight">
-                            {{ number_format($jumlahTransaksi, 0, ',', '.') }}
-                        </p>
-                    </div>
+            <p class="text-base sm:text-lg font-semibold text-gray-800 leading-tight">
+                {{ number_format($jumlahPelanggan, 0, ',', '.') }}
+            </p>
+        </div>
 
-                    <div class="shrink-0 flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-blue-50 text-blue-500">
-                        <svg class="w-4 h-4 sm:w-5 sm:h-5"
-                             fill="none"
-                             stroke="currentColor"
-                             viewBox="0 0 24 24">
-                            <path stroke-linecap="round"
-                                  stroke-linejoin="round"
-                                  stroke-width="1.8"
-                                  d="M9 14l2 2 4-4m-7 8h8a2 2 0 002-2V6a2 2 0 00-2-2H8a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                        </svg>
-                    </div>
-                </div>
-            </div>
-
+        <div class="shrink-0 flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-blue-50 text-blue-500">
+            <svg class="w-4 h-4 sm:w-5 sm:h-5"
+                 fill="none"
+                 stroke="currentColor"
+                 viewBox="0 0 24 24">
+                <path stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="1.8"
+                      d="M17 20h5v-2a4 4 0 00-4-4h-1m-4 6H3v-2a4 4 0 014-4h2m4 6v-2a4 4 0 00-4-4m4 6h4m-8-9a4 4 0 100-8 4 4 0 000 8zm8 0a4 4 0 100-8 4 4 0 000 8z"/>
+            </svg>
+        </div>
+    </div>
+</div>
             {{-- Omzet Hari Ini --}}
             <div class="col-span-2 lg:col-span-1 bg-gradient-to-br from-coral-400 to-coral-600 rounded-xl sm:rounded-2xl p-4 sm:p-5 shadow-sm">
                 <div class="flex items-start justify-between gap-2">

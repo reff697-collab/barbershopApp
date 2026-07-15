@@ -27,7 +27,7 @@ class DashboardController extends Controller
             $user->hasRole('kasir')    => $this->kasirDashboard(),
             $user->hasRole('barber')   => $this->barberDashboard($request),
             $user->hasRole('admin_it') => $this->adminItDashboard(),
-            default => abort(403, 'Role tidak dikenali. Hubungi Admin IT.'),
+            default                    => abort(403, 'Role tidak dikenali. Hubungi Admin IT.'),
         };
     }
 
@@ -83,10 +83,10 @@ class DashboardController extends Controller
             ->get();
 
         $stats = [
-            'total_omzet' => $closingHarians->sum('total_omzet'),
-            'total_komisi' => $closingHarians->sum('total_komisi_barber'),
+            'total_omzet'       => $closingHarians->sum('total_omzet'),
+            'total_komisi'      => $closingHarians->sum('total_komisi_barber'),
             'total_pengeluaran' => $closingHarians->sum('total_pengeluaran'),
-            'laba_bersih' => $closingHarians->sum('laba_bersih'),
+            'laba_bersih'       => $closingHarians->sum('laba_bersih'),
         ];
 
         $belumFinal = false;
@@ -106,28 +106,28 @@ class DashboardController extends Controller
                 $totalKomisi = $todayTransactions->sum('komisi_barber');
 
                 $stats = [
-                    'total_omzet' => $totalOmzet,
-                    'total_komisi' => $totalKomisi,
+                    'total_omzet'       => $totalOmzet,
+                    'total_komisi'      => $totalKomisi,
                     'total_pengeluaran' => 0,
-                    'laba_bersih' => $totalOmzet - $totalKomisi,
+                    'laba_bersih'       => $totalOmzet - $totalKomisi,
                 ];
             }
         }
 
         $chartData = $closingHarians
-            ->sortBy(fn ($closing) => $closing->storeDay->tanggal)
-            ->map(fn ($closing) => [
+            ->sortBy(fn($closing) => $closing->storeDay->tanggal)
+            ->map(fn($closing) => [
                 'tanggal' => $closing->storeDay->tanggal->format('d/m'),
-                'omzet' => (float) $closing->total_omzet,
+                'omzet'   => (float) $closing->total_omzet,
             ])
             ->values();
 
         return view('dashboard.owner', [
-            'range' => $range,
-            'label' => $label,
-            'stats' => $stats,
+            'range'      => $range,
+            'label'      => $label,
+            'stats'      => $stats,
             'belumFinal' => $belumFinal,
-            'chartData' => $chartData,
+            'chartData'  => $chartData,
         ]);
     }
 
@@ -160,23 +160,24 @@ class DashboardController extends Controller
                     ->first();
 
                 return [
-                    'nama' => $barber->name,
-
-                    'status' => match ($status?->status) {
-                        'aktif' => 'Aktif',
+                    'nama'             => $barber->name,
+                    'status'           => match ($status?->status) {
+                        'aktif'   => 'Aktif',
                         'selesai' => 'Selesai',
-                        default => 'Belum Aktif',
+                        default   => 'Belum Aktif',
                     },
-
-                    'breakdown' => $breakdown,
+                    'breakdown'        => $breakdown,
+                    'jumlah_pelanggan' => $breakdown->sum('jumlah'),
                 ];
             });
 
+        $jumlahPelanggan = $barbers->sum('jumlah_pelanggan');
+
         return view('dashboard.kasir', [
-            'storeDay' => $storeDay,
-            'jumlahTransaksi' => $transactions->count(),
+            'storeDay'          => $storeDay,
+            'jumlahPelanggan'   => $jumlahPelanggan,
             'totalOmzetHariIni' => $transactions->sum('total'),
-            'barbers' => $barbers,
+            'barbers'           => $barbers,
         ]);
     }
 
@@ -208,16 +209,18 @@ class DashboardController extends Controller
             $barberId
         );
 
+        $jumlahPelanggan = $breakdown->sum('jumlah');
+
         $activeLoan = Loan::where('barber_id', $barberId)
             ->where('status', 'aktif')
             ->first();
 
         return view('dashboard.barber', [
-            'myStatus' => $myStatus,
-            'breakdown' => $breakdown,
-            'jumlahPelanggan' => $myTransactions->count(),
-            'komisiHariIni' => $myTransactions->sum('komisi_barber'),
-            'activeLoan' => $activeLoan,
+            'myStatus'        => $myStatus,
+            'breakdown'       => $breakdown,
+            'jumlahPelanggan' => $jumlahPelanggan,
+            'komisiHariIni'   => $myTransactions->sum('komisi_barber'),
+            'activeLoan'      => $activeLoan,
         ]);
     }
 
@@ -239,7 +242,7 @@ class DashboardController extends Controller
             ->groupBy('nama')
             ->map(function ($items, $nama) {
                 return [
-                    'kode' => strtoupper(substr($nama, 0, 1)),
+                    'kode'   => strtoupper(substr($nama, 0, 1)),
                     'jumlah' => $items->sum('qty'),
                 ];
             })
