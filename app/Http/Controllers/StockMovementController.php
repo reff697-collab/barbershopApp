@@ -16,7 +16,7 @@ class StockMovementController extends Controller
      */
     public function index(): View
     {
-        $products = Product::where('jenis', 'dijual')
+        $products = Product::where('is_active', true)
             ->orderBy('nama')
             ->get();
 

@@ -40,6 +40,7 @@
                 <thead class="bg-gray-50 text-gray-600">
                     <tr>
                         <th class="px-4 py-2">Nama</th>
+                        <th class="px-4 py-2">Jenis</th>
                         <th class="px-4 py-2">Stok</th>
                         <th class="px-4 py-2">Batas Minimum</th>
                         <th class="px-4 py-2">Status</th>
@@ -49,6 +50,13 @@
                     @forelse ($products as $product)
                         <tr>
                             <td class="px-4 py-2">{{ $product->nama }}</td>
+                            <td class="px-4 py-2">
+                                @if ($product->jenis === 'dijual')
+                                    <span class="px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs">Dijual</span>
+                                @else
+                                    <span class="px-2 py-1 bg-purple-100 text-purple-700 rounded text-xs">Bahan Pakai</span>
+                                @endif
+                            </td>
                             <td class="px-4 py-2">{{ $product->stok }}</td>
                             <td class="px-4 py-2">{{ $product->min_stok }}</td>
                             <td class="px-4 py-2">
@@ -61,7 +69,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="4" class="px-4 py-4 text-center text-gray-500">Belum ada produk jenis dijual.</td>
+                            <td colspan="5" class="px-4 py-4 text-center text-gray-500">Belum ada produk aktif.</td>
                         </tr>
                     @endforelse
                 </tbody>
