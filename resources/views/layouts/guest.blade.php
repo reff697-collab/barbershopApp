@@ -18,7 +18,7 @@
         <div class="min-h-screen flex flex-col justify-center items-center px-4 bg-surface">
             <div class="flex items-center gap-2 mb-6">
                 <div class="w-7 h-7 rounded-xl bg-gradient-to-br from-coral-400 to-coral-600 flex items-center justify-center px-3 py-3">
-                    <span class="text-white text-lg font-semibold">B</span>
+                    <span class="text-white text-lg font-semibold">R</span>
                 </div>
                 <span class="text-lg font-semibold text-gray-800">Rafel</span>
             </div>
