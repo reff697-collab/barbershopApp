@@ -34,8 +34,8 @@ class StoreDayController extends Controller
         ->get();
 
     $services = Service::where('is_active', true)
-        ->orderBy('nama')
-        ->get();
+    ->orderBy('nama')
+    ->paginate(10);
 
     $myStatus = null;
 
