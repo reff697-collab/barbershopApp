@@ -46,6 +46,7 @@
                 <thead class="bg-gray-50 text-gray-600">
                     <tr>
                         <th class="px-4 py-2">Barber</th>
+                        <th class="px-4 py-2">Total Layanan</th>
                         <th class="px-4 py-2">Komisi Kotor</th>
                         <th class="px-4 py-2">Potongan Cicilan</th>
                         <th class="px-4 py-2">Komisi Bersih</th>
@@ -55,6 +56,7 @@
                     @forelse ($closing->barberDetails as $detail)
                         <tr>
                             <td class="px-4 py-2">{{ $detail->barber->name }}</td>
+                            <td class="px-4 py-2">Rp {{ number_format($detail->total_layanan, 0, ',', '.') }}</td>
                             <td class="px-4 py-2">Rp {{ number_format($detail->komisi_kotor, 0, ',', '.') }}</td>
                             <td class="px-4 py-2">Rp {{ number_format($detail->potongan_cicilan, 0, ',', '.') }}</td>
                             <td class="px-4 py-2 font-medium">Rp {{ number_format($detail->komisi_bersih, 0, ',', '.') }}</td>

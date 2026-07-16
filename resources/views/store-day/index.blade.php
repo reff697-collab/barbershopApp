@@ -1,149 +1,124 @@
 <x-app-layout>
-    <div class="p-6 max-w-2xl mx-auto">
-        <h1 class="text-xl font-medium mb-6">Status Toko Hari Ini</h1>
+    <x-slot name="header">
+        <h1 class="text-xl font-semibold text-gray-800">
+            Daftar Layanan
+        </h1>
+    </x-slot>
 
+    <div class="max-w-6xl mx-auto px-3 sm:px-6 lg:px-8 pb-5 sm:pb-8">
+
+        {{-- Informasi halaman --}}
+        <div class="h-8 flex items-center justify-end">
+            <p class="text-xs sm:text-sm text-gray-400">
+                {{ now()->translatedFormat('l, d F Y') }}
+            </p>
+        </div>
+
+        {{-- Notifikasi --}}
         @if (session('success'))
-            <div class="mb-4 p-3 bg-green-100 text-green-800 rounded-md text-sm">
+            <div class="mb-5 sm:mb-6 rounded-xl border border-green-100 bg-green-50 px-4 py-3 text-sm text-green-700">
                 {{ session('success') }}
             </div>
         @endif
 
         @if (session('error'))
-            <div class="mb-4 p-3 bg-red-100 text-red-800 rounded-md text-sm">
+            <div class="mb-5 sm:mb-6 rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-sm text-red-700">
                 {{ session('error') }}
             </div>
         @endif
 
-        {{-- Status toko saat ini --}}
-        <div class="bg-white rounded-lg shadow p-4 mb-6">
-            <p class="text-sm text-gray-500 mb-1">Status Toko</p>
-            @if ($storeDay->status === 'belum_buka')
-                <span class="px-3 py-1 bg-gray-100 text-gray-700 rounded text-sm">Belum Buka</span>
-            @elseif ($storeDay->status === 'buka')
-                <span class="px-3 py-1 bg-green-100 text-green-700 rounded text-sm">Buka</span>
-            @elseif ($storeDay->status === 'tutup')
-                <span class="px-3 py-1 bg-yellow-100 text-yellow-700 rounded text-sm">Tutup Sementara</span>
-            @else
-                <span class="px-3 py-1 bg-red-100 text-red-700 rounded text-sm">Closing Final</span>
-            @endif
+        {{-- Tombol Tambah Layanan --}}
+        <div class="mb-6 flex justify-end">
+            <a href="{{ route('services.create') }}"
+               class="rounded-xl bg-gradient-to-r from-coral-400 to-coral-500 px-4 py-2.5 text-sm font-medium text-white hover:from-coral-500 hover:to-coral-600 shadow-sm transition-all flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                </svg>
+                Tambah Layanan
+            </a>
         </div>
 
-        {{-- Panel khusus barber --}}
-        @if (auth()->user()->hasRole('barber'))
-            <div class="bg-white rounded-lg shadow p-4 mb-6">
-                <p class="text-sm text-gray-500 mb-3">Status Kerja Kamu Hari Ini</p>
+        {{-- Tabel Daftar Layanan --}}
+        <div class="mb-6">
+            <div class="overflow-hidden rounded-xl sm:rounded-2xl border border-gray-100 bg-white shadow-sm">
+                <div class="overflow-x-auto">
+                    <table class="w-full min-w-[520px] text-left text-sm">
+                        <thead class="bg-gray-50 text-gray-500">
+                            <tr>
+                                <th class="px-4 py-3 font-medium sm:px-6">Nama Layanan</th>
+                                <th class="px-4 py-3 font-medium sm:px-6">Harga</th>
+                                <th class="px-4 py-3 font-medium sm:px-6">Status</th>
+                                <th class="px-4 py-3 font-medium sm:px-6 text-right">Aksi</th>
+                            </tr>
+                        </thead>
 
-                @if (! $myStatus)
-                    <form action="{{ route('store-day.activate') }}" method="POST">
-                        @csrf
-                        <button type="submit" class="px-4 py-2 bg-green-600 text-white rounded-md text-sm">
-                            Aktifkan Status (Mulai Kerja)
-                        </button>
-                    </form>
-                @elseif ($myStatus->status === 'aktif')
-                    <p class="text-sm text-green-700 mb-3">Kamu sedang aktif sejak {{ $myStatus->activated_at->format('H:i') }}.</p>
-                    <form action="{{ route('store-day.deactivate') }}" method="POST"
-                          onsubmit="return confirm('Yakin mau menutup status kerja hari ini?');">
-                        @csrf
-                        <button type="submit" class="px-4 py-2 bg-red-600 text-white rounded-md text-sm">
-                            Tutup Status (Selesai Kerja)
-                        </button>
-                    </form>
-                @else
-                    <p class="text-sm text-gray-500">Kamu sudah selesai kerja hari ini ({{ $myStatus->deactivated_at->format('H:i') }}).</p>
-                @endif
+                        <tbody class="divide-y divide-gray-100">
+                            @forelse ($services as $service)
+                                <tr class="text-gray-700 hover:bg-gray-50/70">
+                                    <td class="px-4 py-3 sm:px-6 font-medium text-gray-800">
+                                        {{ $service->nama }}
+                                    </td>
+                                    <td class="px-4 py-3 sm:px-6 text-gray-600">
+                                        Rp {{ number_format($service->harga, 0, ',', '.') }}
+                                    </td>
+                                    <td class="px-4 py-3 sm:px-6">
+                                        @if ($service->is_active)
+                                            <span class="inline-flex items-center rounded-full bg-green-50 px-2.5 py-1 text-[10px] sm:text-xs font-medium text-green-600">
+                                                Aktif
+                                            </span>
+                                        @else
+                                            <span class="inline-flex items-center rounded-full bg-gray-100 px-2.5 py-1 text-[10px] sm:text-xs font-medium text-gray-500">
+                                                Nonaktif
+                                            </span>
+                                        @endif
+                                    </td>
+                                    <td class="px-4 py-3 sm:px-6 text-right">
+                                        <div class="flex items-center justify-end gap-3">
+                                            <a href="{{ route('services.edit', $service) }}"
+                                               class="text-xs sm:text-sm font-medium text-blue-600 hover:text-blue-800 transition-colors">
+                                                Edit
+                                            </a>
+                                            <form action="{{ route('services.destroy', $service) }}" method="POST"
+                                                  class="inline"
+                                                  onsubmit="return confirm('Yakin mau hapus layanan ini?');">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" 
+                                                        class="text-xs sm:text-sm font-medium text-red-600 hover:text-red-800 transition-colors">
+                                                    Hapus
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="4" class="px-5 py-10 text-center">
+                                        <div class="flex items-center justify-center w-12 h-12 rounded-xl bg-gray-100 text-gray-400 mx-auto mb-3">
+                                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+                                            </svg>
+                                        </div>
+
+                                        <p class="text-sm font-medium text-gray-600">
+                                            Belum ada data layanan
+                                        </p>
+                                        <p class="text-xs sm:text-sm text-gray-400 mt-1">
+                                            Silakan tambahkan layanan baru menggunakan tombol di atas.
+                                        </p>
+                                    </td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
             </div>
-        @endif
-
-        {{-- Panel khusus kasir --}}
-        @if (auth()->user()->hasRole('kasir'))
-            <div class="bg-white rounded-lg shadow p-4 mb-6">
-                <p class="text-sm text-gray-500 mb-3">Aksi Kasir</p>
-
-                @if ($storeDay->status === 'belum_buka')
-                    <form action="{{ route('store-day.open') }}" method="POST">
-                        @csrf
-                        <button type="submit"
-                                @disabled(! $adaBarberAktif)
-                                class="px-4 py-2 rounded-md text-sm {{ $adaBarberAktif ? 'bg-green-600 text-white' : 'bg-gray-200 text-gray-400 cursor-not-allowed' }}">
-                            Konfirmasi Buka Toko
-                        </button>
-                    </form>
-                    @unless ($adaBarberAktif)
-                        <p class="text-xs text-gray-500 mt-2">Menunggu minimal 1 barber aktifkan status.</p>
-                    @endunless
-                @elseif ($storeDay->status === 'buka')
-                    @php
-                        $barberMasihAktif = $barbers->flatMap->barberDailyStatuses->where('status', 'aktif')->count();
-                    @endphp
-                    <form action="{{ route('store-day.close') }}" method="POST">
-                        @csrf
-                        <button type="submit"
-                                @disabled($barberMasihAktif > 0)
-                                class="px-4 py-2 rounded-md text-sm {{ $barberMasihAktif === 0 ? 'bg-yellow-600 text-white' : 'bg-gray-200 text-gray-400 cursor-not-allowed' }}">
-                            Tutup Toko (Sementara)
-                        </button>
-                    </form>
-                    @if ($barberMasihAktif > 0)
-                        <p class="text-xs text-gray-500 mt-2">Masih ada {{ $barberMasihAktif }} barber yang belum menutup status.</p>
-                    @endif
-                @elseif ($storeDay->status === 'tutup')
-                    <div class="flex flex-wrap gap-3">
-                        <form action="{{ route('store-day.reopen') }}" method="POST">
-                            @csrf
-                            <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-md text-sm">
-                                Buka Lagi
-                            </button>
-                        </form>
-                        <form action="{{ route('store-day.finalize') }}" method="POST"
-                              onsubmit="return confirm('Yakin mau finalisasi closing? Aksi ini TIDAK BISA dibatalkan, dan data hari ini akan terkunci.');">
-                            @csrf
-                            <button type="submit" class="px-4 py-2 bg-red-600 text-white rounded-md text-sm">
-                                Finalisasi Closing
-                            </button>
-                        </form>
-                    </div>
-                    <p class="text-xs text-gray-500 mt-2">
-                        Toko sedang tutup sementara. Klik "Buka Lagi" kalau masih ada pelanggan, atau "Finalisasi Closing" kalau sudah yakin selesai.
-                    </p>
-                @else
-                    <p class="text-sm text-gray-500">Closing harian sudah difinalisasi. Tidak ada aksi lagi untuk hari ini.</p>
-                @endif
-            </div>
-        @endif
-
-        {{-- Daftar semua barber & status mereka hari ini --}}
-        <div class="bg-white rounded-lg shadow overflow-hidden">
-            <p class="text-sm text-gray-500 p-4 pb-0">Status Semua Barber</p>
-            <table class="w-full text-sm text-left mt-2">
-                <thead class="bg-gray-50 text-gray-600">
-                    <tr>
-                        <th class="px-4 py-2">Nama</th>
-                        <th class="px-4 py-2">Status</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y">
-                    @forelse ($barbers as $barber)
-                        @php $status = $barber->barberDailyStatuses->first(); @endphp
-                        <tr>
-                            <td class="px-4 py-2">{{ $barber->name }}</td>
-                            <td class="px-4 py-2">
-                                @if (! $status)
-                                    <span class="px-2 py-1 bg-gray-100 text-gray-500 rounded text-xs">Belum aktif</span>
-                                @elseif ($status->status === 'aktif')
-                                    <span class="px-2 py-1 bg-green-100 text-green-700 rounded text-xs">Aktif</span>
-                                @else
-                                    <span class="px-2 py-1 bg-gray-100 text-gray-600 rounded text-xs">Selesai</span>
-                                @endif
-                            </td>
-                        </tr>
-                    @empty
-                        <tr>
-                            <td colspan="2" class="px-4 py-4 text-center text-gray-500">Belum ada data barber.</td>
-                        </tr>
-                    @endforelse
-                </tbody>
-            </table>
         </div>
+
+        {{-- Pagination --}}
+        <div class="mt-4">
+            {{ $services->links() }}
+        </div>
+
     </div>
 </x-app-layout>

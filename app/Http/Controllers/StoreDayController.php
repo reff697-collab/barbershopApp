@@ -214,11 +214,11 @@ class StoreDayController extends Controller
                 'closed_at' => now(),
             ]);
 
-            $komisiPerBarber = $transactions->groupBy('barber_id')
-                ->map(fn ($items) => $items->sum('komisi_barber'));
+            $transaksiPerBarber = $transactions->groupBy('barber_id');
 
-            foreach ($komisiPerBarber as $barberId => $komisiKotor) {
-                $potonganCicilan = 0;
+            foreach ($transaksiPerBarber as $barberId => $items) {
+                $totalLayananBarber = $items->sum('total_layanan');
+                $komisiKotor = $items->sum('komisi_barber');
 
                 $loan = Loan::where('barber_id', $barberId)
                     ->where('status', 'aktif')
@@ -241,9 +241,10 @@ class StoreDayController extends Controller
                     ]);
                 }
 
-                ClosingHarianBarber::create([
+                \App\Models\ClosingHarianBarber::create([
                     'closing_harian_id' => $closingHarian->id,
                     'barber_id' => $barberId,
+                    'total_layanan' => $totalLayananBarber,
                     'komisi_kotor' => $komisiKotor,
                     'potongan_cicilan' => $potonganCicilan,
                     'komisi_bersih' => $komisiKotor - $potonganCicilan,

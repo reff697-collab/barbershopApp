@@ -12,6 +12,7 @@ class ClosingHarianBarber extends Model
     protected $fillable = [
         'closing_harian_id',
         'barber_id',
+        'total_layanan',
         'komisi_kotor',
         'potongan_cicilan',
         'komisi_bersih',
