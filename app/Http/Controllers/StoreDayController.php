@@ -235,6 +235,8 @@ class StoreDayController extends Controller
                     ->where('status', 'aktif')
                     ->first();
 
+                $potonganCicilan = 0;
+
                 if ($loan && $komisiKotor >= $loan->cicilan_per_hari) {
                     $potonganCicilan = $loan->cicilan_per_hari;
 
