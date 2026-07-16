@@ -10,6 +10,7 @@ use App\Models\LoanPayment;
 use App\Models\StoreDay;
 use App\Models\Transaction;
 use App\Models\User;
+use App\Models\Service;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -23,29 +24,39 @@ class StoreDayController extends Controller
      * (diatur langsung di view berdasarkan role user yang login).
      */
     public function index(Request $request): View
-    {
-        $storeDay = StoreDay::today();
+{
+    $storeDay = StoreDay::today();
 
-        // Semua user dengan role barber, beserta status hari ini (kalau ada)
-        $barbers = User::role('barber')
-            ->with(['barberDailyStatuses' => function ($query) use ($storeDay) {
-                $query->where('store_day_id', $storeDay->id);
-            }])
-            ->get();
+    $barbers = User::role('barber')
+        ->with(['barberDailyStatuses' => function ($query) use ($storeDay) {
+            $query->where('store_day_id', $storeDay->id);
+        }])
+        ->get();
 
-        $myStatus = null;
-        if ($request->user()->hasRole('barber')) {
-            $myStatus = BarberDailyStatus::where('store_day_id', $storeDay->id)
-                ->where('barber_id', $request->user()->id)
-                ->first();
-        }
+    $services = Service::where('is_active', true)
+        ->orderBy('name')
+        ->get();
 
-        $adaBarberAktif = BarberDailyStatus::where('store_day_id', $storeDay->id)
-            ->where('status', 'aktif')
-            ->exists();
+    $myStatus = null;
 
-        return view('store-day.index', compact('storeDay', 'barbers', 'myStatus', 'adaBarberAktif'));
+    if ($request->user()->hasRole('barber')) {
+        $myStatus = BarberDailyStatus::where('store_day_id', $storeDay->id)
+            ->where('barber_id', $request->user()->id)
+            ->first();
     }
+
+    $adaBarberAktif = BarberDailyStatus::where('store_day_id', $storeDay->id)
+        ->where('status', 'aktif')
+        ->exists();
+
+    return view('store-day.index', compact(
+        'storeDay',
+        'barbers',
+        'services',
+        'myStatus',
+        'adaBarberAktif'
+    ));
+}
 
     /**
      * Barber mengaktifkan status untuk hari ini.
