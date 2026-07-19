@@ -171,7 +171,7 @@
             </a>
 
             <a href="{{ route('stock.index') }}"
-               class="flex items-center justify-center gap-2 w-full px-3 sm:px-4 py-3 bg-gradient-to-r from-coral-400 to-coral-500 text-white rounded-xl text-xs sm:text-sm font-medium hover:opacity-90 transition">
+               class="flex items-center justify-center gap-2 w-full px-3 sm:px-4 py-3 bg-gray-800 text-white rounded-xl text-xs sm:text-sm font-medium">
 
                 <svg class="w-4 h-4 shrink-0"
                      fill="none"

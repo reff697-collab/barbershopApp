@@ -56,7 +56,7 @@
                 {{-- Sisi Kanan: Tombol Transaksi Baru --}}
                 <div class="flex justify-end lg:justify-start shrink-0">
                     <a href="{{ route('transactions.create') }}"
-                       class="w-1/3 lg:w-auto inline-flex items-center justify-center gap-1.5 shrink-0 rounded-xl bg-gradient-to-r from-coral-400 to-coral-500 px-4 py-2.5 text-sm font-medium text-white hover:from-coral-500 hover:to-coral-600 shadow-sm transition-all whitespace-nowrap min-w-[140px]">
+                       class="w-1/3 lg:w-auto inline-flex items-center justify-center gap-1.5 shrink-0 rounded-xl bg-gray-800 px-4 py-2.5 text-sm font-medium text-white shadow-sm transition-all whitespace-nowrap min-w-[140px]">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
                         </svg>
@@ -101,6 +101,9 @@
                                 <th class="px-4 py-3 font-medium sm:px-6">Layanan</th>
                                 <th class="px-4 py-3 font-medium sm:px-6">Qty</th>
                                 <th class="px-4 py-3 font-medium sm:px-6">Subtotal</th>
+                                @role('admin_it')
+                                    <th class="px-4 py-3 font-medium sm:px-6"></th>
+                                @endrole
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-gray-100">
@@ -112,10 +115,20 @@
                                     <td class="px-4 py-3 sm:px-6">{{ $item->nama }}</td>
                                     <td class="px-4 py-3 sm:px-6">{{ $item->qty }}</td>
                                     <td class="px-4 py-3 sm:px-6 font-semibold text-gray-800">Rp {{ number_format($item->subtotal, 0, ',', '.') }}</td>
+                                    @role('admin_it')
+                                        <td class="px-4 py-3 sm:px-6 text-right">
+                                            <form action="{{ route('transactions.destroy', $item->transaction_id) }}" method="POST"
+                                                  onsubmit="return confirm('Yakin mau hapus transaksi ini? Stok produk (jika ada) akan dikembalikan.');">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="text-red-500 text-xs font-medium hover:underline">Hapus</button>
+                                            </form>
+                                        </td>
+                                    @endrole
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="6" class="px-5 py-10 text-center">
+                                    <td colspan="7" class="px-5 py-10 text-center"> 
                                         <div class="flex items-center justify-center w-12 h-12 rounded-xl bg-gray-100 text-gray-400 mx-auto mb-3">
                                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
@@ -151,6 +164,9 @@
                                 <th class="px-4 py-3 font-medium sm:px-6">Produk</th>
                                 <th class="px-4 py-3 font-medium sm:px-6">Qty</th>
                                 <th class="px-4 py-3 font-medium sm:px-6">Subtotal</th>
+                                @role('admin_it')
+                                    <th class="px-4 py-3 font-medium sm:px-6"></th>
+                                @endrole
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-gray-100">
@@ -161,10 +177,20 @@
                                     <td class="px-4 py-3 sm:px-6 font-medium text-gray-800">{{ $item->nama }}</td>
                                     <td class="px-4 py-3 sm:px-6">{{ $item->qty }}</td>
                                     <td class="px-4 py-3 sm:px-6 font-semibold text-gray-800">Rp {{ number_format($item->subtotal, 0, ',', '.') }}</td>
+                                    @role('admin_it')
+                                        <td class="px-4 py-3 sm:px-6 text-right">
+                                            <form action="{{ route('transactions.destroy', $item->transaction_id) }}" method="POST"
+                                                  onsubmit="return confirm('Yakin mau hapus transaksi ini? Stok produk (jika ada) akan dikembalikan.');">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="text-red-500 text-xs font-medium hover:underline">Hapus</button>
+                                            </form>
+                                        </td>
+                                    @endrole
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="5" class="px-5 py-10 text-center">
+                                    <td colspan="6" class="px-5 py-10 text-center">
                                         <div class="flex items-center justify-center w-12 h-12 rounded-xl bg-gray-100 text-gray-400 mx-auto mb-3">
                                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 11m8 4V5"/>

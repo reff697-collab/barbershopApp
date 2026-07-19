@@ -280,12 +280,12 @@
     {{-- Baris 2 --}}
     <div class="grid grid-cols-2 gap-3">
         <a href="{{ route('transactions.index') }}"
-           class="px-4 py-2 bg-gradient-to-r from-coral-400 to-coral-500 text-white rounded-xl text-sm text-center">
+           class="px-4 py-2 bg-gray-800 text-white rounded-xl text-sm text-center">
             Transaksi
         </a>
 
         <a href="{{ route('kas-keluar.index') }}"
-           class="px-4 py-2 bg-white border border-gray-200 rounded-xl text-sm text-gray-700 hover:bg-gray-50 text-center">
+           class="px-4 py-2 bg-red-600 border border-gray-200 rounded-xl text-sm text-white hover:bg-red-800 text-center">
             Kas Keluar
         </a>
     </div>

@@ -136,7 +136,7 @@
                 </div>
 
                 <div class="pt-1">
-                    <button type="submit" class="w-full sm:w-auto rounded-xl bg-gradient-to-r from-coral-400 to-coral-500 px-4 py-2.5 text-sm font-medium text-white hover:from-coral-500 hover:to-coral-600 shadow-sm transition-all">
+                    <button type="submit" class="w-full sm:w-auto rounded-xl bg-red-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-red-800 shadow-sm transition-all">
                         Catat Kas Keluar
                     </button>
                 </div>

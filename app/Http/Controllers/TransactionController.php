@@ -8,6 +8,7 @@ use App\Models\StoreDay;
 use App\Models\TransactionItem;
 use App\Models\Transaction;
 use App\Models\User;
+use App\Models\StockMovement;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -203,5 +204,45 @@ class TransactionController extends Controller
         return redirect()
             ->route('transactions.index')
             ->with('success', 'Transaksi berhasil disimpan.');
+    }
+
+    /**
+     * Hapus transaksi. Hanya boleh selama toko belum difinalisasi -
+     * stok produk yang berkurang akan dikembalikan otomatis.
+     */
+    public function destroy(Transaction $transaction): RedirectResponse
+    {
+        $storeDay = $transaction->storeDay;
+
+        if ($storeDay->status === 'selesai') {
+            return back()->with('error', 'Transaksi tidak bisa dihapus karena closing harian sudah difinalisasi.');
+        }
+
+        DB::transaction(function () use ($transaction) {
+            foreach ($transaction->items as $item) {
+                if ($item->item_type === 'produk') {
+                    $product = Product::find($item->item_id);
+                    if ($product) {
+                        $stokSebelum = $product->stok;
+                        $product->increment('stok', $item->qty);
+
+                        StockMovement::create([
+                            'product_id' => $product->id,
+                            'tipe' => 'masuk',
+                            'qty' => $item->qty,
+                            'stok_sebelum' => $stokSebelum,
+                            'stok_sesudah' => $stokSebelum + $item->qty,
+                            'keterangan' => 'Dikembalikan karena transaksi #' . $transaction->id . ' dihapus',
+                        ]);
+                    }
+                }
+            }
+
+            $transaction->delete(); // otomatis hapus transaction_items juga (cascade)
+        });
+
+        return redirect()
+            ->route('transactions.index')
+            ->with('success', 'Transaksi berhasil dihapus dan stok telah dikembalikan.');
     }
 }

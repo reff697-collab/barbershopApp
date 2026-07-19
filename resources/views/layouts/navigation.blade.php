@@ -73,6 +73,9 @@
             @endhasanyrole
 
             @role('admin_it')
+                <x-sidebar-link :href="route('transactions.index')" :active="request()->routeIs('transactions.*')">
+                    Transaksi
+                </x-sidebar-link>
                 <p class="px-3 text-xs font-medium text-gray-400 uppercase tracking-wide mb-2 mt-6">Master Data</p>
                 <x-sidebar-link :href="route('services.index')" :active="request()->routeIs('services.*')">
                     Layanan

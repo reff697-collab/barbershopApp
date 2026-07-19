@@ -42,14 +42,16 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/toko/buka-lagi', [StoreDayController::class, 'reopen'])->name('store-day.reopen');
         Route::post('/toko/finalisasi', [StoreDayController::class, 'finalizeClosing'])->name('store-day.finalize');
 
-        // Route Transaksi
-        Route::get('/transaksi', [TransactionController::class, 'index'])->name('transactions.index');
-        Route::get('/transaksi/baru', [TransactionController::class, 'create'])->name('transactions.create');
-        Route::post('/transaksi', [TransactionController::class, 'store'])->name('transactions.store');
-
         // Route Kas Keluar
         Route::get('/kas-keluar', [KasKeluarController::class, 'index'])->name('kas-keluar.index');
         Route::post('/kas-keluar', [KasKeluarController::class, 'store'])->name('kas-keluar.store');
+    });
+
+    // Route Transaksi Bersama untuk Kasir dan Admin IT
+    Route::middleware(['role:kasir|admin_it'])->group(function () {
+        Route::get('/transaksi', [TransactionController::class, 'index'])->name('transactions.index');
+        Route::get('/transaksi/baru', [TransactionController::class, 'create'])->name('transactions.create');
+        Route::post('/transaksi', [TransactionController::class, 'store'])->name('transactions.store');
     });
 
     // Route khusus role Admin IT
@@ -73,6 +75,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         // Route untuk Stok
         Route::get('/stok', [StockMovementController::class, 'index'])->name('stock.index');
         Route::post('/stok/restock', [StockMovementController::class, 'restock'])->name('stock.restock');
+
+        // Route Hapus Transaksi (Khusus Admin IT)
+        Route::delete('/transaksi/{transaction}', [TransactionController::class, 'destroy'])->name('transactions.destroy');
     });
 
     // Route khusus role Owner
