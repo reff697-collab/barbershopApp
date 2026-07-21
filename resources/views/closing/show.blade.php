@@ -40,6 +40,7 @@
                         <span class="text-xs font-medium text-gray-400 uppercase tracking-wider">Omzet Layanan</span>
                         <span class="text-gray-700 font-medium">Rp {{ number_format($closing->total_omzet_layanan, 0, ',', '.') }}</span>
                     </div>
+
                     <div class="flex justify-between items-center text-gray-600">
                         <span class="text-xs font-medium text-gray-400 uppercase tracking-wider">Omzet Produk</span>
                         <span class="text-gray-700 font-medium">Rp {{ number_format($closing->total_omzet_produk, 0, ',', '.') }}</span>
@@ -49,14 +50,27 @@
                         <span class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Total Omzet</span>
                         <span class="font-semibold text-gray-800">Rp {{ number_format($closing->total_omzet, 0, ',', '.') }}</span>
                     </div>
+
+                    <div class="flex justify-between items-center pl-4">
+                        <span class="text-gray-400 text-xs">— Tunai</span>
+                        <span class="text-xs">Rp {{ number_format($closing->total_omzet_tunai, 0, ',', '.') }}</span>
+                    </div>
+
+                    <div class="flex justify-between items-center pl-4">
+                        <span class="text-gray-400 text-xs">— QRIS</span>
+                        <span class="text-xs">Rp {{ number_format($closing->total_omzet_qris, 0, ',', '.') }}</span>
+                    </div>
+
                     <div class="flex justify-between items-center text-gray-600">
                         <span class="text-xs font-medium text-gray-400 uppercase tracking-wider">Total Komisi Barber</span>
                         <span class="text-gray-700 font-medium">Rp {{ number_format($closing->total_komisi_barber, 0, ',', '.') }}</span>
                     </div>
+
                     <div class="flex justify-between items-center text-gray-600">
                         <span class="text-xs font-medium text-gray-400 uppercase tracking-wider">Pengeluaran Ops.</span>
                         <span class="text-gray-700 font-medium">Rp {{ number_format($closing->total_pengeluaran, 0, ',', '.') }}</span>
                     </div>
+
                     <div class="flex justify-between items-center text-gray-600">
                         <span class="text-xs font-medium text-gray-400 uppercase tracking-wider">Kas Keluar Harian</span>
                         <span class="text-gray-700 font-medium">Rp {{ number_format($closing->total_kas_keluar, 0, ',', '.') }}</span>

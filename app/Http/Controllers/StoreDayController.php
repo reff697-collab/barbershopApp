@@ -24,39 +24,35 @@ class StoreDayController extends Controller
      * (diatur langsung di view berdasarkan role user yang login).
      */
     public function index(Request $request): View
-{
-    $storeDay = StoreDay::today();
+    {
+        $storeDay = StoreDay::today();
 
-    $barbers = User::role('barber')
-        ->with(['barberDailyStatuses' => function ($query) use ($storeDay) {
-            $query->where('store_day_id', $storeDay->id);
-        }])
-        ->get();
+        $barbers = User::role('barber')
+            ->with(['barberDailyStatuses' => function ($query) use ($storeDay) {
+                $query->where('store_day_id', $storeDay->id);
+            }])
+            ->get();
 
-    $services = Service::where('is_active', true)
-    ->orderBy('nama')
-    ->paginate(10);
+        $myStatus = null;
+        if ($request->user()->hasRole('barber')) {
+            $myStatus = BarberDailyStatus::where('store_day_id', $storeDay->id)
+                ->where('barber_id', $request->user()->id)
+                ->first();
+        }
 
-    $myStatus = null;
+        $adaBarberAktif = BarberDailyStatus::where('store_day_id', $storeDay->id)
+            ->where('status', 'aktif')
+            ->exists();
 
-    if ($request->user()->hasRole('barber')) {
-        $myStatus = BarberDailyStatus::where('store_day_id', $storeDay->id)
-            ->where('barber_id', $request->user()->id)
-            ->first();
+        $closingHarian = null;
+        if ($storeDay->status === 'selesai') {
+            $closingHarian = \App\Models\ClosingHarian::where('store_day_id', $storeDay->id)
+                ->with('barberDetails.barber')
+                ->first();
+        }
+
+        return view('store-day.index', compact('storeDay', 'barbers', 'myStatus', 'adaBarberAktif', 'closingHarian'));
     }
-
-    $adaBarberAktif = BarberDailyStatus::where('store_day_id', $storeDay->id)
-        ->where('status', 'aktif')
-        ->exists();
-
-    return view('store-day.index', compact(
-        'storeDay',
-        'barbers',
-        'services',
-        'myStatus',
-        'adaBarberAktif'
-    ));
-}
 
     /**
      * Barber mengaktifkan status untuk hari ini.
@@ -209,6 +205,8 @@ class StoreDayController extends Controller
             $totalOmzetProduk = $transactions->sum('total') - $totalOmzetLayanan;
             $totalOmzet = $transactions->sum('total');
             $totalKomisi = $transactions->sum('komisi_barber');
+            $totalOmzetTunai = $transactions->where('payment_method', 'tunai')->sum('total');
+            $totalOmzetQris = $transactions->where('payment_method', 'qris')->sum('total');
             $totalPengeluaran = \App\Models\Expense::whereDate('tanggal', $storeDay->tanggal)->sum('nominal');
             $totalKasKeluar = \App\Models\KasKeluar::where('store_day_id', $storeDay->id)->sum('nominal');
 
@@ -217,6 +215,8 @@ class StoreDayController extends Controller
                 'total_omzet' => $totalOmzet,
                 'total_omzet_layanan' => $totalOmzetLayanan,
                 'total_omzet_produk' => $totalOmzetProduk,
+                'total_omzet_tunai' => $totalOmzetTunai,
+                'total_omzet_qris' => $totalOmzetQris,
                 'total_komisi_barber' => $totalKomisi,
                 'total_pengeluaran' => $totalPengeluaran,
                 'total_kas_keluar' => $totalKasKeluar,

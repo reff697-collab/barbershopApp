@@ -14,6 +14,8 @@ class ClosingHarian extends Model
         'total_omzet',
         'total_omzet_layanan',
         'total_omzet_produk',
+        'total_omzet_tunai',
+        'total_omzet_qris',
         'total_komisi_barber',
         'total_pengeluaran',
         'total_kas_keluar',
