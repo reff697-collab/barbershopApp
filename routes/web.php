@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\CelenganController;
 use App\Http\Controllers\ClosingBulananController;
 use App\Http\Controllers\ClosingHarianController;
 use App\Http\Controllers\DashboardController;
@@ -88,6 +89,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
         // Route Closing Bulanan
         Route::get('/closing-bulanan', [ClosingBulananController::class, 'index'])->name('closing-bulanan.index');
         Route::post('/closing-bulanan', [ClosingBulananController::class, 'store'])->name('closing-bulanan.store');
+
+        // Route Celengan
+        Route::get('/celengan', [CelenganController::class, 'index'])->name('celengan.index');
+        Route::post('/celengan', [CelenganController::class, 'store'])->name('celengan.store');
+        Route::get('/celengan/{celengan}', [CelenganController::class, 'show'])->name('celengan.show');
+        Route::post('/celengan/{celengan}/transaksi', [CelenganController::class, 'addTransaksi'])->name('celengan.transaksi');
     });
 
     // Route bersama untuk Owner dan Admin IT

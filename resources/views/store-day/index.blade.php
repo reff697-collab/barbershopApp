@@ -107,7 +107,7 @@
 
                         <form action="{{ route('store-day.activate') }}" method="POST">
                             @csrf
-                            <button type="submit" class="w-full rounded-xl bg-gradient-to-r from-coral-400 to-coral-500 px-4 py-2.5 text-sm font-medium text-white hover:from-coral-500 hover:to-coral-600 sm:w-auto">
+                            <button type="submit" class="w-full rounded-xl bg-gray-800 px-4 py-2.5 text-sm font-medium text-white sm:w-auto">
                                 Aktifkan Status
                             </button>
                         </form>
