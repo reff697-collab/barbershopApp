@@ -85,8 +85,11 @@ class DashboardController extends Controller
         $stats = [
             'total_omzet'       => $closingHarians->sum('total_omzet'),
             'total_komisi'      => $closingHarians->sum('total_komisi_barber'),
-            'total_pengeluaran' => $closingHarians->sum('total_pengeluaran'),
+            'total_kas_keluar'  => $closingHarians->sum('total_kas_keluar'),
             'laba_bersih'       => $closingHarians->sum('laba_bersih'),
+            'jumlah_pelanggan'  => Transaction::whereHas('storeDay', function ($query) use ($from, $to) {
+                $query->whereBetween('tanggal', [$from->toDateString(), $to->toDateString()]);
+            })->count(),
         ];
 
         $belumFinal = false;
@@ -108,8 +111,9 @@ class DashboardController extends Controller
                 $stats = [
                     'total_omzet'       => $totalOmzet,
                     'total_komisi'      => $totalKomisi,
-                    'total_pengeluaran' => 0,
+                    'total_kas_keluar'  => \App\Models\KasKeluar::whereDate('created_at', now()->toDateString())->sum('nominal'),
                     'laba_bersih'       => $totalOmzet - $totalKomisi,
+                    'jumlah_pelanggan'  => $todayTransactions->count(),
                 ];
             }
         }

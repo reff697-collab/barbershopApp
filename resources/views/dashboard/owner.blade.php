@@ -14,7 +14,7 @@
                 </a>
             @endforeach
 
-            <form action="{{ route('dashboard') }}" method="GET" class="flex items-center gap-2">
+            <form action="{{ route('dashboard') }}" method="GET" class="flex flex-wrap items-center gap-2 w-full sm:w-auto">
                 <input type="hidden" name="range" value="custom">
                 <input type="date" name="from" value="{{ request('from') }}"
                        class="px-3 py-2 rounded-xl text-sm border border-gray-200">
@@ -35,7 +35,7 @@
         @endif
 
         {{-- Kartu ringkasan --}}
-<div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-8">
+<div class="grid grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4 mb-8">
 
     {{-- Total Omzet --}}
     <div class="bg-white rounded-xl sm:rounded-2xl border border-gray-100 p-4 sm:p-5 shadow-sm">
@@ -44,21 +44,13 @@
                 <p class="text-[11px] sm:text-xs text-gray-400 mb-1">
                     Total Omzet
                 </p>
-
                 <p class="text-base sm:text-xl font-semibold text-gray-800 leading-tight break-words">
                     Rp {{ number_format($stats['total_omzet'], 0, ',', '.') }}
                 </p>
             </div>
-
             <div class="shrink-0 flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-orange-50 text-coral-500">
-                <svg class="w-4 h-4 sm:w-5 sm:h-5"
-                     fill="none"
-                     stroke="currentColor"
-                     viewBox="0 0 24 24">
-                    <path stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="1.8"
-                          d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                 </svg>
             </div>
         </div>
@@ -71,48 +63,51 @@
                 <p class="text-[11px] sm:text-xs text-gray-400 mb-1">
                     Komisi Barber
                 </p>
-
                 <p class="text-base sm:text-xl font-semibold text-gray-800 leading-tight break-words">
                     Rp {{ number_format($stats['total_komisi'], 0, ',', '.') }}
                 </p>
             </div>
-
             <div class="shrink-0 flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-blue-50 text-blue-500">
-                <svg class="w-4 h-4 sm:w-5 sm:h-5"
-                     fill="none"
-                     stroke="currentColor"
-                     viewBox="0 0 24 24">
-                    <path stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="1.8"
-                          d="M17 20h5v-2a4 4 0 00-5-3.87M9 20H4v-2a4 4 0 015-3.87m8-4.13a4 4 0 11-8 0 4 4 0 018 0zm-8 0a3 3 0 11-6 0 3 3 0 016 0z"/>
+                <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M17 20h5v-2a4 4 0 00-5-3.87M9 20H4v-2a4 4 0 015-3.87m8-4.13a4 4 0 11-8 0 4 4 0 018 0zm-8 0a3 3 0 11-6 0 3 3 0 016 0z"/>
                 </svg>
             </div>
         </div>
     </div>
 
-    {{-- Pengeluaran --}}
+    {{-- Kas Keluar --}}
     <div class="bg-white rounded-xl sm:rounded-2xl border border-gray-100 p-4 sm:p-5 shadow-sm">
         <div class="flex items-start justify-between gap-2">
             <div class="min-w-0">
                 <p class="text-[11px] sm:text-xs text-gray-400 mb-1">
-                    Pengeluaran
+                    Kas Keluar
                 </p>
-
                 <p class="text-base sm:text-xl font-semibold text-gray-800 leading-tight break-words">
-                    Rp {{ number_format($stats['total_pengeluaran'], 0, ',', '.') }}
+                    Rp {{ number_format($stats['total_kas_keluar'], 0, ',', '.') }}
                 </p>
             </div>
-
             <div class="shrink-0 flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-red-50 text-red-500">
-                <svg class="w-4 h-4 sm:w-5 sm:h-5"
-                     fill="none"
-                     stroke="currentColor"
-                     viewBox="0 0 24 24">
-                    <path stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="1.8"
-                          d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6"/>
+                <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6"/>
+                </svg>
+            </div>
+        </div>
+    </div>
+
+    {{-- Jumlah Pelanggan --}}
+    <div class="bg-white rounded-xl sm:rounded-2xl border border-gray-100 p-4 sm:p-5 shadow-sm">
+        <div class="flex items-start justify-between gap-2">
+            <div class="min-w-0">
+                <p class="text-[11px] sm:text-xs text-gray-400 mb-1">
+                    Jumlah Pelanggan
+                </p>
+                <p class="text-base sm:text-xl font-semibold text-gray-800 leading-tight break-words">
+                    {{ $stats['jumlah_pelanggan'] }}
+                </p>
+            </div>
+            <div class="shrink-0 flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-purple-50 text-purple-500">
+                <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M17 20h5v-2a4 4 0 00-5-3.87M9 20H4v-2a4 4 0 015-3.87m8-4.13a4 4 0 11-8 0 4 4 0 018 0zm-8 0a3 3 0 11-6 0 3 3 0 016 0z"/>
                 </svg>
             </div>
         </div>
@@ -125,21 +120,13 @@
                 <p class="text-[11px] sm:text-xs text-white/80 mb-1">
                     Laba Bersih
                 </p>
-
                 <p class="text-base sm:text-xl font-semibold text-white leading-tight break-words">
                     Rp {{ number_format($stats['laba_bersih'], 0, ',', '.') }}
                 </p>
             </div>
-
             <div class="shrink-0 flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-white/20 text-white">
-                <svg class="w-4 h-4 sm:w-5 sm:h-5"
-                     fill="none"
-                     stroke="currentColor"
-                     viewBox="0 0 24 24">
-                    <path stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="1.8"
-                          d="M3 17l6-6 4 4 8-8m0 0h-6m6 0v6"/>
+                <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M3 17l6-6 4 4 8-8m0 0h-6m6 0v6"/>
                 </svg>
             </div>
         </div>
