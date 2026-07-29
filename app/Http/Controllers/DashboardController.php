@@ -82,14 +82,43 @@ class DashboardController extends Controller
             ->with('storeDay')
             ->get();
 
+        $storeDayHariIni = StoreDay::today();
+        $barberBreakdown = User::role('barber')
+            ->get()
+            ->map(function ($barber) use ($storeDayHariIni) {
+                $breakdown = $this->layananBreakdown($storeDayHariIni->id, $barber->id);
+
+                $status = BarberDailyStatus::where('store_day_id', $storeDayHariIni->id)
+                    ->where('barber_id', $barber->id)
+                    ->first();
+
+                return [
+                    'nama' => $barber->name,
+                    'status' => match ($status?->status) {
+                        'aktif' => 'Aktif',
+                        'selesai' => 'Selesai',
+                        default => 'Belum Aktif',
+                    },
+                    'breakdown' => $breakdown,
+                    'jumlah_pelanggan' => $breakdown->sum('jumlah'),
+                ];
+            });
+
+        $kasKeluarList = \App\Models\KasKeluar::whereHas('storeDay', function ($query) use ($from, $to) {
+            $query->whereBetween('tanggal', [$from->toDateString(), $to->toDateString()]);
+        })->with('inputBy')->latest()->get();
+
         $stats = [
             'total_omzet'       => $closingHarians->sum('total_omzet'),
             'total_komisi'      => $closingHarians->sum('total_komisi_barber'),
             'total_kas_keluar'  => $closingHarians->sum('total_kas_keluar'),
             'laba_bersih'       => $closingHarians->sum('laba_bersih'),
-            'jumlah_pelanggan'  => Transaction::whereHas('storeDay', function ($query) use ($from, $to) {
-                $query->whereBetween('tanggal', [$from->toDateString(), $to->toDateString()]);
-            })->count(),
+            'jumlah_pelanggan'  => TransactionItem::where('item_type', 'layanan')
+                ->whereHas('transaction', function ($query) use ($from, $to) {
+                    $query->whereHas('storeDay', function ($q) use ($from, $to) {
+                        $q->whereBetween('tanggal', [$from->toDateString(), $to->toDateString()]);
+                    });
+                })->sum('qty'),
         ];
 
         $belumFinal = false;
@@ -132,6 +161,8 @@ class DashboardController extends Controller
             'stats'      => $stats,
             'belumFinal' => $belumFinal,
             'chartData'  => $chartData,
+            'barberBreakdown' => $barberBreakdown,
+            'kasKeluarList' => $kasKeluarList,
         ]);
     }
 
@@ -247,6 +278,26 @@ class DashboardController extends Controller
             ->map(function ($items, $nama) {
                 return [
                     'kode'   => strtoupper(substr($nama, 0, 1)),
+                    'jumlah' => $items->sum('qty'),
+                ];
+            })
+            ->values();
+    }
+
+    private function layananBreakdownRentang($from, $to, int $barberId)
+    {
+        return TransactionItem::where('item_type', 'layanan')
+            ->whereHas('transaction', function ($query) use ($from, $to, $barberId) {
+                $query->where('barber_id', $barberId)
+                    ->whereHas('storeDay', function ($q) use ($from, $to) {
+                        $q->whereBetween('tanggal', [$from->toDateString(), $to->toDateString()]);
+                    });
+            })
+            ->get()
+            ->groupBy('nama')
+            ->map(function ($items, $nama) {
+                return [
+                    'kode' => strtoupper(substr($nama, 0, 1)),
                     'jumlah' => $items->sum('qty'),
                 ];
             })
