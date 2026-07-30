@@ -158,22 +158,6 @@
                                 </span>
                             </div>
 
-                            {{-- Ringkasan Barber --}}
-                            <div class="grid grid-cols-2 gap-2 rounded-xl bg-gray-50 p-3 text-xs sm:text-sm">
-                                <div>
-                                    <p class="text-gray-400">Total Pelanggan</p>
-                                    <p class="font-semibold text-gray-800">
-                                        {{ number_format($barber['total_pelanggan'] ?? 0, 0, ',', '.') }} orang
-                                    </p>
-                                </div>
-                                <div>
-                                    <p class="text-gray-400">Total Komisi</p>
-                                    <p class="font-semibold text-coral-600">
-                                        Rp {{ number_format($barber['total_komisi'] ?? 0, 0, ',', '.') }}
-                                    </p>
-                                </div>
-                            </div>
-
                             {{-- Breakdown Kode Layanan Barber --}}
                             @if (isset($barber['breakdown']) && count($barber['breakdown']) > 0)
                                 <div class="mt-4 border-t border-gray-100 pt-4">
