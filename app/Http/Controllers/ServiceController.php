@@ -35,6 +35,8 @@ class ServiceController extends Controller
             'harga' => ['required', 'numeric', 'min:0'],
         ]);
 
+        $validated['hitung_pelanggan'] = $request->boolean('hitung_pelanggan');
+
         Service::create($validated);
 
         return redirect()
@@ -59,11 +61,13 @@ class ServiceController extends Controller
             'nama' => ['required', 'string', 'max:255'],
             'harga' => ['required', 'numeric', 'min:0'],
             'is_active' => ['nullable', 'boolean'],
+            'hitung_pelanggan' => ['nullable', 'boolean'],
         ]);
 
         // Checkbox yang tidak dicentang tidak dikirim sama sekali oleh HTML,
         // jadi kita perlu set manual ke false kalau tidak ada di request.
         $validated['is_active'] = $request->boolean('is_active');
+        $validated['hitung_pelanggan'] = $request->boolean('hitung_pelanggan');
 
         $service->update($validated);
 

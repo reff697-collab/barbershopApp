@@ -67,11 +67,6 @@
                     </div>
 
                     <div class="flex justify-between items-center text-gray-600">
-                        <span class="text-xs font-medium text-gray-400 uppercase tracking-wider">Pengeluaran Ops.</span>
-                        <span class="text-gray-700 font-medium">Rp {{ number_format($closing->total_pengeluaran, 0, ',', '.') }}</span>
-                    </div>
-
-                    <div class="flex justify-between items-center text-gray-600">
                         <span class="text-xs font-medium text-gray-400 uppercase tracking-wider">Kas Keluar Harian</span>
                         <span class="text-gray-700 font-medium">Rp {{ number_format($closing->total_kas_keluar, 0, ',', '.') }}</span>
                     </div>

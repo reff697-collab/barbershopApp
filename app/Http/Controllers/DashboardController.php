@@ -15,9 +15,12 @@ use Illuminate\Http\Request;
 
 class DashboardController extends Controller
 {
-    /**
-     * Mengarahkan user ke dashboard sesuai role.
+     /**
+     * Nama layanan yang dihitung sebagai "pelanggan" (bukan add-on seperti
+     * Semir/Cuci Rambut). Kalau nama layanan di Kelola Layanan berubah,
+     * daftar ini juga harus diperbarui.
      */
+
     public function index(Request $request)
     {
         $user = $request->user();
@@ -100,7 +103,7 @@ class DashboardController extends Controller
                         default => 'Belum Aktif',
                     },
                     'breakdown' => $breakdown,
-                    'jumlah_pelanggan' => $breakdown->sum('jumlah'),
+                    'jumlah_pelanggan' => $this->hitungJumlahPelanggan($storeDayHariIni->id, $barber->id),
                 ];
             });
 
@@ -113,7 +116,10 @@ class DashboardController extends Controller
             'total_komisi'      => $closingHarians->sum('total_komisi_barber'),
             'total_kas_keluar'  => $closingHarians->sum('total_kas_keluar'),
             'laba_bersih'       => $closingHarians->sum('laba_bersih'),
+            'omzet_tunai'       => $closingHarians->sum('total_omzet_tunai'),
+            'omzet_qris'        => $closingHarians->sum('total_omzet_qris'),
             'jumlah_pelanggan'  => TransactionItem::where('item_type', 'layanan')
+                ->whereIn('item_id', \App\Models\Service::where('hitung_pelanggan', true)->pluck('id'))
                 ->whereHas('transaction', function ($query) use ($from, $to) {
                     $query->whereHas('storeDay', function ($q) use ($from, $to) {
                         $q->whereBetween('tanggal', [$from->toDateString(), $to->toDateString()]);
@@ -142,7 +148,15 @@ class DashboardController extends Controller
                     'total_komisi'      => $totalKomisi,
                     'total_kas_keluar'  => \App\Models\KasKeluar::whereDate('created_at', now()->toDateString())->sum('nominal'),
                     'laba_bersih'       => $totalOmzet - $totalKomisi,
-                    'jumlah_pelanggan'  => $todayTransactions->count(),
+                    'omzet_tunai'       => $todayTransactions->where('payment_method', 'tunai')->sum('total'),
+                    'omzet_qris'        => $todayTransactions->where('payment_method', 'qris')->sum('total'),
+                    'jumlah_pelanggan'  => TransactionItem::where('item_type', 'layanan')
+                        ->whereIn('item_id', \App\Models\Service::where('hitung_pelanggan', true)->pluck('id'))
+                        ->whereHas('transaction', function ($q) {
+                            $q->whereHas('storeDay', function ($q2) {
+                                $q2->whereDate('tanggal', now()->toDateString());
+                            });
+                        })->sum('qty'),
                 ];
             }
         }
@@ -179,6 +193,9 @@ class DashboardController extends Controller
             $storeDay->id
         )->get();
 
+        $omzetTunai = $transactions->where('payment_method', 'tunai')->sum('total');
+        $omzetQris = $transactions->where('payment_method', 'qris')->sum('total');
+
         $barbers = User::role('barber')
             ->get()
             ->map(function ($barber) use ($storeDay) {
@@ -202,7 +219,7 @@ class DashboardController extends Controller
                         default   => 'Belum Aktif',
                     },
                     'breakdown'        => $breakdown,
-                    'jumlah_pelanggan' => $breakdown->sum('jumlah'),
+                    'jumlah_pelanggan' => $this->hitungJumlahPelanggan($storeDay->id, $barber->id),
                 ];
             });
 
@@ -213,6 +230,8 @@ class DashboardController extends Controller
             'jumlahPelanggan'   => $jumlahPelanggan,
             'totalOmzetHariIni' => $transactions->sum('total'),
             'barbers'           => $barbers,
+            'omzetTunai'        => $omzetTunai,
+            'omzetQris'         => $omzetQris,
         ]);
     }
 
@@ -239,12 +258,15 @@ class DashboardController extends Controller
             ->where('barber_id', $barberId)
             ->get();
 
+            $omzetTunai = $myTransactions->where('payment_method', 'tunai')->sum('total');
+            $omzetQris = $myTransactions->where('payment_method', 'qris')->sum('total');
+
         $breakdown = $this->layananBreakdown(
             $storeDay->id,
             $barberId
         );
 
-        $jumlahPelanggan = $breakdown->sum('jumlah');
+        $jumlahPelanggan = $this->hitungJumlahPelanggan($storeDay->id, $barberId);
 
         $activeLoan = Loan::where('barber_id', $barberId)
             ->where('status', 'aktif')
@@ -256,6 +278,8 @@ class DashboardController extends Controller
             'jumlahPelanggan' => $jumlahPelanggan,
             'komisiHariIni'   => $myTransactions->sum('komisi_barber'),
             'activeLoan'      => $activeLoan,
+            'omzetTunai'      => $omzetTunai,
+            'omzetQris'       => $omzetQris,
         ]);
     }
 
@@ -302,6 +326,19 @@ class DashboardController extends Controller
                 ];
             })
             ->values();
+    }
+
+    private function hitungJumlahPelanggan(int $storeDayId, int $barberId): int
+    {
+        $idLayananPelanggan = \App\Models\Service::where('hitung_pelanggan', true)->pluck('id');
+
+        return TransactionItem::where('item_type', 'layanan')
+            ->whereIn('item_id', $idLayananPelanggan)
+            ->whereHas('transaction', function ($query) use ($storeDayId, $barberId) {
+                $query->where('store_day_id', $storeDayId)
+                    ->where('barber_id', $barberId);
+            })
+            ->sum('qty');
     }
 
     /**

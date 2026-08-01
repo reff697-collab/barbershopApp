@@ -386,13 +386,6 @@
                     </div>
 
                     <div class="flex items-center justify-between gap-4">
-                        <span class="text-gray-500">Pengeluaran Operasional</span>
-                        <span class="font-medium text-gray-700">
-                            Rp {{ number_format($closingHarian->total_pengeluaran, 0, ',', '.') }}
-                        </span>
-                    </div>
-
-                    <div class="flex items-center justify-between gap-4">
                         <span class="text-gray-500">Kas Keluar Harian</span>
                         <span class="font-medium text-gray-700">
                             Rp {{ number_format($closingHarian->total_kas_keluar, 0, ',', '.') }}

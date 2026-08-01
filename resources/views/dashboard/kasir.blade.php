@@ -102,6 +102,21 @@
 
         </div>
 
+        {{-- Breakdown Tunai/QRIS --}}
+        <div class="mb-6 rounded-xl border border-gray-100 bg-white p-4 shadow-sm sm:rounded-2xl sm:p-5">
+            <p class="mb-3 text-sm font-medium text-gray-700">Omzet Berdasarkan Metode Bayar</p>
+            <div class="grid grid-cols-2 gap-3">
+                <div class="rounded-xl bg-gray-50 p-3">
+                    <p class="mb-1 text-xs text-gray-400">Tunai</p>
+                    <p class="font-semibold text-gray-800">Rp {{ number_format($omzetTunai ?? 0, 0, ',', '.') }}</p>
+                </div>
+                <div class="rounded-xl bg-gray-50 p-3">
+                    <p class="mb-1 text-xs text-gray-400">QRIS</p>
+                    <p class="font-semibold text-gray-800">Rp {{ number_format($omzetQris ?? 0, 0, ',', '.') }}</p>
+                </div>
+            </div>
+        </div>
+
         {{-- Performa Barber --}}
         <div class="mb-6">
             <div class="mb-3 flex items-center justify-between gap-3">
@@ -226,19 +241,19 @@
 
             {{-- Baris 1 --}}
             <a href="{{ route('store-day.index') }}"
-               class="block w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-center text-sm font-medium text-gray-700 hover:bg-gray-50 transition">
+               class="block w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-center text-sm font-medium text-gray-700 transition hover:bg-gray-50">
                 Status Buka/Tutup Toko
             </a>
 
             {{-- Baris 2 --}}
             <div class="grid grid-cols-2 gap-3">
                 <a href="{{ route('transactions.index') }}"
-                   class="rounded-xl bg-gray-800 px-4 py-2.5 text-center text-sm font-medium text-white hover:bg-gray-900 transition">
+                   class="rounded-xl bg-gray-800 px-4 py-2.5 text-center text-sm font-medium text-white transition hover:bg-gray-900">
                     Transaksi
                 </a>
 
                 <a href="{{ route('kas-keluar.index') }}"
-                   class="rounded-xl border border-red-200 bg-red-600 px-4 py-2.5 text-center text-sm font-medium text-white hover:bg-red-700 transition">
+                   class="rounded-xl border border-red-200 bg-red-600 px-4 py-2.5 text-center text-sm font-medium text-white transition hover:bg-red-700">
                     Kas Keluar
                 </a>
             </div>

@@ -22,6 +22,13 @@
                 @enderror
             </div>
 
+            <div class="flex items-center gap-2">
+                <input type="checkbox" name="hitung_pelanggan" id="hitung_pelanggan" value="1" checked>
+                <label for="hitung_pelanggan" class="text-sm">
+                    Hitung sebagai pelanggan (untuk layanan utama seperti Dewasa/Anak/Bayi, bukan add-on seperti Semir/Cuci Rambut)
+                </label>
+            </div>
+
             <div class="flex items-center gap-3 pt-2">
                 <button type="submit" class="px-4 py-2 bg-gray-800 text-white rounded-md text-sm">
                     Simpan

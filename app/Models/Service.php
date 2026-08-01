@@ -13,6 +13,7 @@ class Service extends Model
         'nama',
         'harga',
         'is_active',
+        'hitung_pelanggan',
     ];
 
     protected function casts(): array
@@ -20,6 +21,7 @@ class Service extends Model
         return [
             'harga' => 'decimal:2',
             'is_active' => 'boolean',
+            'hitung_pelanggan' => 'boolean',
         ];
     }
 }
