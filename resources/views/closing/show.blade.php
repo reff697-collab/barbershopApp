@@ -151,5 +151,59 @@
             </div>
 
         </div>
+
+{{-- Riwayat Kas Keluar Hari Ini --}}
+        <div class="mb-6">
+            <div class="overflow-hidden rounded-xl sm:rounded-2xl border border-gray-100 bg-white shadow-sm">
+                <div class="overflow-x-auto">
+                    <table class="w-full min-w-[520px] text-left text-sm">
+                        <thead class="bg-gray-50 text-gray-500">
+                            <tr>
+                                <th class="px-4 py-3 font-medium sm:px-6">Waktu</th>
+                                <th class="px-4 py-3 font-medium sm:px-6">Nominal</th>
+                                <th class="px-4 py-3 font-medium sm:px-6">Keterangan</th>
+                                <th class="px-4 py-3 font-medium sm:px-6">Dicatat Oleh</th>
+                            </tr>
+                        </thead>
+
+                        <tbody class="divide-y divide-gray-100">
+                            @forelse ($kasKeluarList as $kk)
+                                <tr class="text-gray-700 hover:bg-gray-50/70">
+                                    <td class="px-4 py-3 sm:px-6 text-gray-500">
+                                        {{ $kk->created_at->format('H:i') }}
+                                    </td>
+                                    <td class="px-4 py-3 sm:px-6 font-semibold text-gray-800">
+                                        Rp {{ number_format($kk->nominal, 0, ',', '.') }}
+                                    </td>
+                                    <td class="px-4 py-3 sm:px-6 text-gray-600">
+                                        {{ $kk->keterangan }}
+                                    </td>
+                                    <td class="px-4 py-3 sm:px-6 font-medium text-gray-700">
+                                        {{ $kk->inputBy->name ?? '-' }}
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="4" class="px-5 py-10 text-center">
+                                        <div class="flex items-center justify-center w-12 h-12 rounded-xl bg-gray-100 text-gray-400 mx-auto mb-3">
+                                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                                            </svg>
+                                        </div>
+                                        <p class="text-sm font-medium text-gray-600">
+                                            Belum ada kas keluar hari ini
+                                        </p>
+                                        <p class="text-xs sm:text-sm text-gray-400 mt-1">
+                                            Data pengeluaran kas akan ditampilkan pada bagian ini.
+                                        </p>
+                                    </td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
     </div>
 </x-app-layout>

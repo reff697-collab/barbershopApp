@@ -26,6 +26,10 @@ class ClosingHarianController extends Controller
     {
         $closing->load(['storeDay', 'closedBy', 'barberDetails.barber']);
 
-        return view('closing.show', compact('closing'));
+        $kasKeluarList = \App\Models\KasKeluar::where('store_day_id', $closing->store_day_id)
+            ->with('inputBy')
+            ->get();
+
+        return view('closing.show', compact('closing', 'kasKeluarList'));
     }
 }

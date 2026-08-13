@@ -26,8 +26,8 @@
             </a>
         </div>
 
-        <!-- Menu -->
-        <nav class="flex-1 overflow-y-auto px-4 py-6 space-y-1">
+        <!-- Menu Navigation -->
+        <nav class="flex-1 space-y-1 overflow-y-auto px-4 py-6">
             <p class="mb-2 px-3 text-xs font-medium uppercase tracking-wide text-gray-400">
                 Menu
             </p>
@@ -36,6 +36,7 @@
                 Dashboard
             </x-sidebar-link>
 
+            {{-- Menu Kasir --}}
             @role('kasir')
                 <x-sidebar-link :href="route('store-day.index')" :active="request()->routeIs('store-day.index')">
                     Status Toko
@@ -48,24 +49,33 @@
                 </x-sidebar-link>
             @endrole
 
+            {{-- Menu Barber --}}
             @role('barber')
                 <x-sidebar-link :href="route('store-day.index')" :active="request()->routeIs('store-day.index')">
                     Status Kerja
                 </x-sidebar-link>
             @endrole
 
+            {{-- Menu Laporan (Owner) --}}
             @role('owner')
                 <p class="mb-2 mt-6 px-3 text-xs font-medium uppercase tracking-wide text-gray-400">
                     Laporan
                 </p>
+
                 <x-sidebar-link :href="route('closing.index')" :active="request()->routeIs('closing.*')">
                     Closing Harian
                 </x-sidebar-link>
+
                 <x-sidebar-link :href="route('closing-bulanan.index')" :active="request()->routeIs('closing-bulanan.*')">
                     Closing Bulanan
                 </x-sidebar-link>
+
+                <x-sidebar-link :href="route('absensi.index')" :active="request()->routeIs('absensi.*')">
+                    Rekap Absensi
+                </x-sidebar-link>
             @endrole
 
+            {{-- Menu Keuangan (Owner & Admin IT) --}}
             @hasanyrole('owner|admin_it')
                 <p class="mb-2 mt-6 px-3 text-xs font-medium uppercase tracking-wide text-gray-400">
                     Keuangan
@@ -75,24 +85,28 @@
                     Pengeluaran
                 </x-sidebar-link>
 
-                @role('owner')
-                    <x-sidebar-link :href="route('celengan.index')" :active="request()->routeIs('celengan.*')">
-                        Celengan
-                    </x-sidebar-link>
-                @endrole
+                <x-sidebar-link :href="route('celengan.index')" :active="request()->routeIs('celengan.*')">
+                    Celengan
+                </x-sidebar-link>
 
                 <x-sidebar-link :href="route('loans.index')" :active="request()->routeIs('loans.*')">
                     Pinjaman Barber
                 </x-sidebar-link>
             @endhasanyrole
 
+            {{-- Menu Master Data & Admin (Admin IT) --}}
             @role('admin_it')
                 <x-sidebar-link :href="route('transactions.index')" :active="request()->routeIs('transactions.*')">
                     Transaksi
                 </x-sidebar-link>
+                <x-sidebar-link :href="route('kas-keluar.index')" :active="request()->routeIs('kas-keluar.*')">
+                    Kas Keluar
+                </x-sidebar-link>
+
                 <p class="mb-2 mt-6 px-3 text-xs font-medium uppercase tracking-wide text-gray-400">
                     Master Data
                 </p>
+
                 <x-sidebar-link :href="route('services.index')" :active="request()->routeIs('services.*')">
                     Layanan
                 </x-sidebar-link>
@@ -108,7 +122,7 @@
             @endrole
         </nav>
 
-        <!-- User info & logout -->
+        <!-- User info & Logout -->
         <div class="shrink-0 border-t border-gray-100 p-4">
             <div class="mb-2 flex items-center gap-3 px-2">
                 <div class="flex h-9 w-9 items-center justify-center rounded-full bg-coral-100 text-sm font-medium text-coral-600">
@@ -123,21 +137,27 @@
                     </p>
                 </div>
             </div>
-            <a href="{{ route('profile.edit') }}" class="block rounded-lg px-3 py-2 text-sm text-gray-600 hover:bg-gray-50">
+
+            <a href="{{ route('profile.edit') }}"
+               class="block rounded-lg px-3 py-2 text-sm text-gray-600 transition hover:bg-gray-50 hover:text-gray-900">
                 Profil
             </a>
+
             <form method="POST" action="{{ route('logout') }}">
                 @csrf
-                <button type="submit" class="w-full rounded-lg px-3 py-2 text-left text-sm text-gray-600 hover:bg-gray-50">
+                <button type="submit"
+                        class="w-full rounded-lg px-3 py-2 text-left text-sm text-gray-600 transition hover:bg-gray-50 hover:text-gray-900">
                     Keluar
                 </button>
             </form>
         </div>
     </aside>
 
-    <!-- Topbar mobile (tombol hamburger) -->
+    <!-- Topbar Mobile (Tombol Hamburger) -->
     <div class="fixed left-0 right-0 top-0 z-20 flex h-16 items-center border-b border-gray-100 bg-white px-4 md:hidden">
-        <button @click="sidebarOpen = true" class="-ml-2 p-2 text-gray-500">
+        <button @click="sidebarOpen = true"
+                type="button"
+                class="-ml-2 rounded-md p-2 text-gray-500 hover:text-gray-700 focus:outline-none">
             <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
             </svg>

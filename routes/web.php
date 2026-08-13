@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AbsensiController;
 use App\Http\Controllers\CelenganController;
 use App\Http\Controllers\ClosingBulananController;
 use App\Http\Controllers\ClosingHarianController;
@@ -42,8 +43,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/toko/tutup', [StoreDayController::class, 'confirmClose'])->name('store-day.close');
         Route::post('/toko/buka-lagi', [StoreDayController::class, 'reopen'])->name('store-day.reopen');
         Route::post('/toko/finalisasi', [StoreDayController::class, 'finalizeClosing'])->name('store-day.finalize');
+    });
 
-        // Route Kas Keluar
+    // Route Kas Keluar - bersama Kasir dan Admin IT
+    Route::middleware(['role:kasir|admin_it'])->group(function () {
         Route::get('/kas-keluar', [KasKeluarController::class, 'index'])->name('kas-keluar.index');
         Route::post('/kas-keluar', [KasKeluarController::class, 'store'])->name('kas-keluar.store');
     });
@@ -90,11 +93,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/closing-bulanan', [ClosingBulananController::class, 'index'])->name('closing-bulanan.index');
         Route::post('/closing-bulanan', [ClosingBulananController::class, 'store'])->name('closing-bulanan.store');
 
-        // Route Celengan
-        Route::get('/celengan', [CelenganController::class, 'index'])->name('celengan.index');
-        Route::post('/celengan', [CelenganController::class, 'store'])->name('celengan.store');
-        Route::get('/celengan/{celengan}', [CelenganController::class, 'show'])->name('celengan.show');
-        Route::post('/celengan/{celengan}/transaksi', [CelenganController::class, 'addTransaksi'])->name('celengan.transaksi');
+        // Route Absensi
+        Route::get('/absensi', [AbsensiController::class, 'index'])->name('absensi.index');
+        Route::post('/absensi', [AbsensiController::class, 'store'])->name('absensi.store');
     });
 
     // Route bersama untuk Owner dan Admin IT
@@ -107,6 +108,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
         // Route Pinjaman
         Route::get('/pinjaman', [LoanController::class, 'index'])->name('loans.index');
         Route::post('/pinjaman', [LoanController::class, 'store'])->name('loans.store');
+
+        // Route Celengan
+        Route::get('/celengan', [CelenganController::class, 'index'])->name('celengan.index');
+        Route::post('/celengan', [CelenganController::class, 'store'])->name('celengan.store');
+        Route::get('/celengan/{celengan}', [CelenganController::class, 'show'])->name('celengan.show');
+        Route::post('/celengan/{celengan}/transaksi', [CelenganController::class, 'addTransaksi'])->name('celengan.transaksi');
     });
 });
 
