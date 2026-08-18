@@ -114,6 +114,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/celengan', [CelenganController::class, 'store'])->name('celengan.store');
         Route::get('/celengan/{celengan}', [CelenganController::class, 'show'])->name('celengan.show');
         Route::post('/celengan/{celengan}/transaksi', [CelenganController::class, 'addTransaksi'])->name('celengan.transaksi');
+        Route::delete('/celengan/{celengan}/transaksi/{transaksi}', [CelenganController::class, 'destroyTransaksi'])->name('celengan.transaksi.destroy');
     });
 });
 

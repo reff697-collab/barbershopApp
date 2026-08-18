@@ -73,14 +73,17 @@ class CelenganController extends Controller
             'created_by' => $request->user()->id,
         ]);
 
-        if ($validated['tipe'] === 'masuk') {
-            $celengan->increment('saldo', $validated['nominal']);
-        } else {
-            $celengan->decrement('saldo', $validated['nominal']);
-        }
-
         return redirect()
             ->route('celengan.show', $celengan)
             ->with('success', 'Transaksi celengan berhasil dicatat.');
+    }
+
+    public function destroyTransaksi(Celengan $celengan, CelenganTransaksi $transaksi): RedirectResponse
+    {
+        $transaksi->delete();
+
+        return redirect()
+            ->route('celengan.show', $celengan)
+            ->with('success', 'Transaksi berhasil dihapus.');
     }
 }

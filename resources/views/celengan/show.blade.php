@@ -1,36 +1,36 @@
 <x-app-layout>
-    <div class="p-6 max-w-2xl mx-auto">
+    <div class="mx-auto max-w-2xl p-6">
 
         {{-- Header --}}
-        <div class="flex items-center justify-between gap-3 mb-6">
-            <h1 class="text-xl font-medium text-gray-800 truncate">
+        <div class="mb-6 flex items-center justify-between gap-3">
+            <h1 class="truncate text-xl font-medium text-gray-800">
                 {{ $celengan->nama }}
             </h1>
 
             <a href="{{ route('celengan.index') }}"
-               class="text-sm text-gray-600 hover:text-gray-800">
+               class="text-sm text-gray-600 transition hover:text-gray-900">
                 Kembali
             </a>
         </div>
 
-        {{-- Notifikasi sukses --}}
+        {{-- Notifikasi Sukses --}}
         @if (session('success'))
-            <div class="mb-4 p-3 bg-green-100 text-green-800 rounded-md text-sm">
+            <div class="mb-4 rounded-lg bg-green-50 p-3 text-sm text-green-700 border border-green-200">
                 {{ session('success') }}
             </div>
         @endif
 
-        {{-- Notifikasi error --}}
+        {{-- Notifikasi Error --}}
         @if (session('error'))
-            <div class="mb-4 p-3 bg-red-100 text-red-800 rounded-md text-sm">
+            <div class="mb-4 rounded-lg bg-red-50 p-3 text-sm text-red-700 border border-red-200">
                 {{ session('error') }}
             </div>
         @endif
 
-        {{-- Validasi --}}
+        {{-- Validasi Error --}}
         @if ($errors->any())
-            <div class="mb-4 p-3 bg-red-100 text-red-800 rounded-md text-sm">
-                <ul class="list-disc list-inside">
+            <div class="mb-4 rounded-lg bg-red-50 p-3 text-sm text-red-700 border border-red-200">
+                <ul class="list-inside list-disc space-y-1">
                     @foreach ($errors->all() as $error)
                         <li>{{ $error }}</li>
                     @endforeach
@@ -38,10 +38,10 @@
             </div>
         @endif
 
-        {{-- Saldo --}}
-        <div class="bg-gray-50 rounded-lg p-4 mb-6 flex items-center justify-between gap-4">
+        {{-- Informasi Saldo --}}
+        <div class="mb-6 flex items-center justify-between gap-4 rounded-xl border border-gray-100 bg-gray-50/80 p-4">
             <div>
-                <p class="text-sm font-medium text-gray-600 mb-1">
+                <p class="mb-1 text-sm font-medium text-gray-500">
                     Saldo Saat Ini
                 </p>
 
@@ -50,78 +50,60 @@
                 </p>
             </div>
 
-            <div class="shrink-0 flex items-center justify-center w-11 h-11 rounded-lg bg-white border border-gray-200 text-gray-500">
-                <svg class="w-5 h-5"
-                     fill="none"
-                     stroke="currentColor"
-                     viewBox="0 0 24 24">
-                    <path stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="1.8"
-                          d="M5 11a7 7 0 0114 0v4a3 3 0 01-3 3h-1l-1 2h-4l-1-2H8a3 3 0 01-3-3v-4zm2-2L5 7m12 2l2-2M8 13h.01M16 13h.01"/>
+            <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-gray-200 bg-white text-gray-500 shadow-sm">
+                <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M5 11a7 7 0 0114 0v4a3 3 0 01-3 3h-1l-1 2h-4l-1-2H8a3 3 0 01-3-3v-4zm2-2L5 7m12 2l2-2M8 13h.01M16 13h.01" />
                 </svg>
             </div>
         </div>
 
-        {{-- Form transaksi --}}
-        <div class="bg-white rounded-lg shadow p-4 mb-6">
-            <p class="text-sm font-medium text-gray-800 mb-3">
+        {{-- Form Transaksi --}}
+        <div class="mb-6 rounded-xl border border-gray-100 bg-white p-5 shadow-sm">
+            <h2 class="mb-4 text-sm font-medium text-gray-800">
                 Catat Transaksi
-            </p>
+            </h2>
 
             <form action="{{ route('celengan.transaksi', $celengan) }}"
                   method="POST"
                   class="space-y-4">
-
                 @csrf
 
-                {{-- Jenis transaksi --}}
+                {{-- Jenis Transaksi --}}
                 <div>
-                    <label class="block text-sm font-medium mb-1">
+                    <label class="mb-1 block text-sm font-medium text-gray-700">
                         Jenis Transaksi
                     </label>
 
                     <div class="flex gap-3">
-
                         {{-- Nabung --}}
-                        <label class="flex-1">
+                        <label class="flex-1 cursor-pointer">
                             <input type="radio"
                                    name="tipe"
                                    value="masuk"
                                    class="peer sr-only"
-                                   {{ old('tipe', 'masuk') === 'masuk' ? 'checked' : '' }}>
+                                   @checked(old('tipe', 'masuk') === 'masuk')>
 
-                            <div class="px-4 py-2.5 border rounded-xl text-sm text-center cursor-pointer
-                                        peer-checked:bg-gradient-to-r
-                                        peer-checked:from-coral-400
-                                        peer-checked:to-coral-500
-                                        peer-checked:text-white
-                                        peer-checked:border-transparent">
+                            <div class="rounded-xl border border-gray-200 px-4 py-2.5 text-center text-sm transition peer-checked:border-transparent peer-checked:bg-gradient-to-r peer-checked:from-coral-400 peer-checked:to-coral-500 peer-checked:text-white peer-checked:shadow-sm">
                                 Nabung
                             </div>
                         </label>
 
                         {{-- Ambil --}}
-                        <label class="flex-1">
+                        <label class="flex-1 cursor-pointer">
                             <input type="radio"
                                    name="tipe"
                                    value="keluar"
                                    class="peer sr-only"
-                                   {{ old('tipe') === 'keluar' ? 'checked' : '' }}>
+                                   @checked(old('tipe') === 'keluar')>
 
-                            <div class="px-4 py-2.5 border rounded-xl text-sm text-center cursor-pointer
-                                        peer-checked:bg-gradient-to-r
-                                        peer-checked:from-coral-400
-                                        peer-checked:to-coral-500
-                                        peer-checked:text-white
-                                        peer-checked:border-transparent">
+                            <div class="rounded-xl border border-gray-200 px-4 py-2.5 text-center text-sm transition peer-checked:border-transparent peer-checked:bg-gradient-to-r peer-checked:from-coral-400 peer-checked:to-coral-500 peer-checked:text-white peer-checked:shadow-sm">
                                 Ambil
                             </div>
                         </label>
                     </div>
 
                     @error('tipe')
-                        <p class="text-red-600 text-xs mt-1">
+                        <p class="mt-1 text-xs text-red-600">
                             {{ $message }}
                         </p>
                     @enderror
@@ -129,18 +111,17 @@
 
                 {{-- Nominal --}}
                 <div>
-                    <label class="block text-sm font-medium mb-1">
+                    <label class="mb-1 block text-sm font-medium text-gray-700">
                         Nominal
                     </label>
 
-                    <x-currency-input
-                        name="nominal"
-                        placeholder="Contoh: 50.000"
-                        required
-                    />
+                    <x-currency-input name="nominal"
+                                      :value="old('nominal')"
+                                      placeholder="Contoh: 50.000"
+                                      required />
 
                     @error('nominal')
-                        <p class="text-red-600 text-xs mt-1">
+                        <p class="mt-1 text-xs text-red-600">
                             {{ $message }}
                         </p>
                     @enderror
@@ -149,7 +130,7 @@
                 {{-- Keterangan --}}
                 <div>
                     <label for="keterangan"
-                           class="block text-sm font-medium mb-1">
+                           class="mb-1 block text-sm font-medium text-gray-700">
                         Keterangan
                     </label>
 
@@ -158,90 +139,77 @@
                            name="keterangan"
                            value="{{ old('keterangan') }}"
                            placeholder="Keterangan (opsional)"
-                           class="w-full border rounded-md px-3 py-2 text-sm">
+                           class="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm transition focus:border-coral-500 focus:outline-none focus:ring-1 focus:ring-coral-500">
 
                     @error('keterangan')
-                        <p class="text-red-600 text-xs mt-1">
+                        <p class="mt-1 text-xs text-red-600">
                             {{ $message }}
                         </p>
                     @enderror
                 </div>
 
-                {{-- Tombol simpan --}}
-                <div class="flex items-center gap-3">
+                {{-- Tombol Aksi --}}
+                <div class="flex items-center gap-3 pt-2">
                     <button type="submit"
-                            class="px-4 py-2 bg-gray-800 text-white rounded-md text-sm hover:bg-gray-700 transition-colors">
+                            class="rounded-lg bg-gray-800 px-4 py-2 text-sm font-medium text-white transition hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-800 focus:ring-offset-2">
                         Simpan Transaksi
                     </button>
 
                     <a href="{{ route('celengan.index') }}"
-                       class="text-sm text-gray-600">
+                       class="text-sm text-gray-600 transition hover:text-gray-900">
                         Batal
                     </a>
                 </div>
             </form>
         </div>
 
-        {{-- Riwayat transaksi --}}
-        <div class="bg-white rounded-lg shadow overflow-hidden mb-4">
-
-            {{-- Header tabel --}}
-            <div class="p-4 border-b border-gray-100">
+        {{-- Riwayat Transaksi --}}
+        <div class="mb-4 overflow-hidden rounded-xl border border-gray-100 bg-white shadow-sm">
+            <div class="border-b border-gray-100 p-4">
                 <p class="text-sm font-medium text-gray-800">
                     Riwayat Transaksi
                 </p>
 
-                <p class="text-xs text-gray-400 mt-1">
+                <p class="mt-1 text-xs text-gray-400">
                     Catatan saldo masuk dan keluar dari celengan ini.
                 </p>
             </div>
 
             <div class="overflow-x-auto">
-                <table class="w-full min-w-[600px] text-sm text-left">
-
+                <table class="w-full min-w-[560px] text-left text-sm">
                     <thead class="bg-gray-50 text-gray-600">
                         <tr>
-                            <th class="px-3 py-2">
-                                Waktu
-                            </th>
-
-                            <th class="px-3 py-2">
-                                Tipe
-                            </th>
-
-                            <th class="px-3 py-2">
-                                Nominal
-                            </th>
-
-                            <th class="px-3 py-2">
-                                Keterangan
-                            </th>
+                            <th class="px-4 py-2.5 font-medium">Waktu</th>
+                            <th class="px-4 py-2.5 font-medium">Tipe</th>
+                            <th class="px-4 py-2.5 font-medium">Nominal</th>
+                            <th class="px-4 py-2.5 font-medium">Keterangan</th>
+                            <th class="px-4 py-2.5 font-medium"><span class="sr-only">Aksi</span></th>
                         </tr>
                     </thead>
 
-                    <tbody class="divide-y">
+                    <tbody class="divide-y border-t border-gray-100">
                         @forelse ($riwayat as $r)
-                            <tr>
+                            <tr class="transition hover:bg-gray-50/50">
                                 {{-- Waktu --}}
-                                <td class="px-3 py-2 text-gray-500 whitespace-nowrap">
+                                <td class="whitespace-nowrap px-4 py-3 text-gray-500">
                                     {{ $r->created_at->format('d/m/y H:i') }}
                                 </td>
 
                                 {{-- Tipe --}}
-                                <td class="px-3 py-2">
+                                <td class="px-4 py-3">
                                     @if ($r->tipe === 'masuk')
-                                        <span class="px-2 py-1 bg-green-100 text-green-700 rounded text-xs">
+                                        <span class="inline-block rounded px-2 py-0.5 text-xs font-medium bg-green-100 text-green-700">
                                             Masuk
                                         </span>
                                     @else
-                                        <span class="px-2 py-1 bg-red-100 text-red-700 rounded text-xs">
+                                        <span class="inline-block rounded px-2 py-0.5 text-xs font-medium bg-red-100 text-red-700">
                                             Keluar
                                         </span>
                                     @endif
                                 </td>
 
                                 {{-- Nominal --}}
-                                <td class="px-3 py-2 font-medium whitespace-nowrap">
+                                <td class="whitespace-nowrap px-4 py-3 font-medium">
                                     @if ($r->tipe === 'masuk')
                                         <span class="text-green-700">
                                             + Rp {{ number_format($r->nominal, 0, ',', '.') }}
@@ -254,14 +222,26 @@
                                 </td>
 
                                 {{-- Keterangan --}}
-                                <td class="px-3 py-2 text-gray-600">
+                                <td class="px-4 py-3 text-gray-600">
                                     {{ $r->keterangan ?: '-' }}
+                                </td>
+
+                                {{-- Aksi --}}
+                                <td class="whitespace-nowrap px-4 py-3 text-right">
+                                    <form action="{{ route('celengan.transaksi.destroy', [$celengan, $r]) }}"
+                                          method="POST"
+                                          onsubmit="return confirm('Yakin mau hapus transaksi ini?');">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="text-xs text-red-600 transition hover:text-red-800 hover:underline">
+                                            Hapus
+                                        </button>
+                                    </form>
                                 </td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="4"
-                                    class="px-4 py-6 text-center text-gray-500">
+                                <td colspan="5" class="px-4 py-8 text-center text-gray-500">
                                     Belum ada transaksi.
                                 </td>
                             </tr>
