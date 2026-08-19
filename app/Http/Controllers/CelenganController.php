@@ -78,6 +78,10 @@ class CelenganController extends Controller
             ->with('success', 'Transaksi celengan berhasil dicatat.');
     }
 
+    /**
+     * Hapus satu baris transaksi celengan. Saldo otomatis ter-update
+     * lewat database trigger, tidak perlu dihitung manual di sini.
+     */
     public function destroyTransaksi(Celengan $celengan, CelenganTransaksi $transaksi): RedirectResponse
     {
         $transaksi->delete();
@@ -85,5 +89,36 @@ class CelenganController extends Controller
         return redirect()
             ->route('celengan.show', $celengan)
             ->with('success', 'Transaksi berhasil dihapus.');
+    }
+
+    /**
+     * Hitung ulang saldo SEMUA celengan berdasarkan riwayat transaksi
+     * aslinya. Berguna untuk membetulkan data lama yang mungkin sempat
+     * salah (misal dari bug lama, atau edit manual lewat Supabase
+     * sebelum trigger database dipasang).
+     */
+    public function recalculateAll(): RedirectResponse
+    {
+        $celengans = Celengan::all();
+        $jumlahDiperbaiki = 0;
+
+        foreach ($celengans as $celengan) {
+            $saldoBenar = $celengan->transaksis()
+                ->get()
+                ->sum(fn ($t) => $t->tipe === 'masuk' ? $t->nominal : -$t->nominal);
+
+            if ((float) $celengan->saldo !== (float) $saldoBenar) {
+                $celengan->update(['saldo' => $saldoBenar]);
+                $jumlahDiperbaiki++;
+            }
+        }
+
+        $pesan = $jumlahDiperbaiki > 0
+            ? "{$jumlahDiperbaiki} celengan diperbaiki karena saldonya tidak sesuai."
+            : 'Semua saldo celengan sudah sesuai, tidak ada yang perlu diperbaiki.';
+
+        return redirect()
+            ->route('celengan.index')
+            ->with('success', $pesan);
     }
 }

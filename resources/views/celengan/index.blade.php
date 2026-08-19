@@ -1,9 +1,21 @@
 <x-app-layout>
-    <x-slot name="header">
+        <x-slot name="header">
         <div class="flex items-center justify-between">
             <h1 class="text-xl font-semibold text-gray-800">
                 Celengan
             </h1>
+
+            <form action="{{ route('celengan.recalculate') }}" method="POST"
+                  onsubmit="return confirm('Hitung ulang saldo semua celengan berdasarkan riwayat transaksi aslinya?');">
+                @csrf
+                <button type="submit"
+                        class="inline-flex items-center gap-1.5 rounded-xl border border-gray-200 bg-white px-3 py-2 text-xs sm:text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                    </svg>
+                    <span>Hitung Ulang Saldo</span>
+                </button>
+            </form>
         </div>
     </x-slot>
 

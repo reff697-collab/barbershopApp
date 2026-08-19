@@ -115,6 +115,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/celengan/{celengan}', [CelenganController::class, 'show'])->name('celengan.show');
         Route::post('/celengan/{celengan}/transaksi', [CelenganController::class, 'addTransaksi'])->name('celengan.transaksi');
         Route::delete('/celengan/{celengan}/transaksi/{transaksi}', [CelenganController::class, 'destroyTransaksi'])->name('celengan.transaksi.destroy');
+        Route::post('/celengan/recalculate', [CelenganController::class, 'recalculateAll'])->name('celengan.recalculate');
     });
 });
 
