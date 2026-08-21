@@ -143,13 +143,13 @@ class DashboardController extends Controller
                 $totalOmzet = $todayTransactions->sum('total');
                 $totalKomisi = $todayTransactions->sum('komisi_barber');
 
+                $totalKasKeluarHariIni = \App\Models\KasKeluar::whereDate('created_at', now()->toDateString())->sum('nominal');
+
                 $stats = [
                     'total_omzet'       => $totalOmzet,
                     'total_komisi'      => $totalKomisi,
-                    'total_kas_keluar'  => \App\Models\KasKeluar::whereDate('created_at', now()->toDateString())->sum('nominal'),
-                    'laba_bersih'       => $totalOmzet - $totalKomisi,
-                    'omzet_tunai'       => $todayTransactions->where('payment_method', 'tunai')->sum('total'),
-                    'omzet_qris'        => $todayTransactions->where('payment_method', 'qris')->sum('total'),
+                    'total_kas_keluar'  => $totalKasKeluarHariIni,
+                    'laba_bersih'       => $totalOmzet - $totalKomisi - $totalKasKeluarHariIni,
                     'jumlah_pelanggan'  => TransactionItem::where('item_type', 'layanan')
                         ->whereIn('item_id', \App\Models\Service::where('hitung_pelanggan', true)->pluck('id'))
                         ->whereHas('transaction', function ($q) {
